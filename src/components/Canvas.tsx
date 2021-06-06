@@ -1,5 +1,16 @@
 
 import * as React from 'react'
+import {BiPencil, BiEraser} from 'react-icons/bi'
+import {RiPaintFill} from 'react-icons/ri'
+
+function min(x: number, y : number): number{
+    if(x < y) return x;
+    return y;
+}
+function max(x : number, y : number) : number{
+    if(x > y) return x;
+    return y;
+}
 
 interface State{
 
@@ -16,13 +27,28 @@ type points = {
 class Canvas extends React.Component<Props, State>{
 
     canvasRef : React.RefObject<HTMLCanvasElement>;
-    drawMode : 'color' | 'fill' ;
+    drawMode : 'color' | 'fill' | 'erase' ;
+    color : number[];
+    colorString : string;
+    lineWidth : number;
 
     constructor(props : Props){
         super(props);
         this.canvasRef = React.createRef();
         this.drawMode = 'color';
+        this.color = [0, 0, 0];
+        this.colorString = '#000000';
+        this.lineWidth = 2;
     }
+
+    hexToRGB(hex: string) : number[] {
+
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+      
+        return [r, g, b]
+      }
 
     getColorIndicesForCoord(x : number, y : number, width : number, height : number) : number[]{
         if (x < 0 || y < 0 || x >= width || y >= height) return [-1, -1, -1, -1];
@@ -30,11 +56,11 @@ class Canvas extends React.Component<Props, State>{
         return [red, red + 1, red + 2, red + 3];
     }
 
-    setNewColor(imageData : Uint8ClampedArray, indexes : number[]){
-        for(let i = 0; i < 2; ++i){
-            imageData[indexes[i]] = 100;
+    setNewColor(imageData : Uint8ClampedArray, indexes : number[] , colors : number[]){
+        for(let i = 0; i < 3; ++i){
+            imageData[indexes[i]] = colors[i];
         }
-        imageData[indexes[3]] = 200;
+        imageData[indexes[3]] = 255;
     }
 
     checkEqualColor(imageData : Uint8ClampedArray, point1: number[], point2 : number[]): boolean{
@@ -62,58 +88,30 @@ class Canvas extends React.Component<Props, State>{
             y : y
         })
         vis[x][y] = true;
-        // let path = new Path2D();
-        // path.moveTo(x, y);
-        // path.lineTo(x, y);
         while(stack.length !== 0){
             let top : points = stack.pop()!;
-            let upIndexes = this.getColorIndicesForCoord(top.x ,top.y + 1 , canvas.width,canvas.height);
-            if(this.checkEqualColor(imageData, upIndexes , startingColorIndex) && !vis[top.x][top.y+1]){
-                // console.log(upIndexes);
-                stack.push({
-                    x : top.x,
-                    y : top.y + 1
-                })
-                vis[top.x][top.y + 1] = true;
-                this.setNewColor(imageData, upIndexes);
-            }
-            let rightIndexes = this.getColorIndicesForCoord(top.x + 1 ,top.y  , canvas.width,canvas.height);
-            if(this.checkEqualColor(imageData, rightIndexes , startingColorIndex) && !vis[top.x + 1][top.y]){
-                // console.log(rightIndexes);
-                stack.push({
-                    x : top.x + 1,
-                    y : top.y
-                })
-                vis[top.x + 1][top.y ] = true;
-                this.setNewColor(imageData, rightIndexes);
-            }
-            let leftIndexes = this.getColorIndicesForCoord(top.x - 1 ,top.y , canvas.width,canvas.height);
-            // console.log(top.x - 1,top.y);
-            if(this.checkEqualColor(imageData, leftIndexes , startingColorIndex) && !vis[top.x - 1][top.y]){
-                // console.log(leftIndexes);
-                stack.push({
-                    x : top.x - 1,
-                    y : top.y 
-                })
-                vis[top.x - 1][top.y] = true;
-                this.setNewColor(imageData, leftIndexes);
-            }
-            let bottomIndexes = this.getColorIndicesForCoord(top.x ,top.y - 1 , canvas.width,canvas.height);
-            if(this.checkEqualColor(imageData, bottomIndexes , startingColorIndex) && !vis[top.x][top.y - 1]){
-                // console.log(bottomIndexes);
-                stack.push({
-                    x : top.x,
-                    y : top.y - 1
-                })
-                vis[top.x][top.y - 1] = true;
-                this.setNewColor(imageData, bottomIndexes);
+            let cornerPoints : points[] = [
+                {x : top.x + 1, y : top.y},{x : top.x, y : top.y + 1},
+                {x : top.x - 1, y : top.y}, {x : top.x, y : top.y - 1},
+                {x : top.x + 1, y : top.y - 1},{x : top.x + 1, y : top.y + 1},
+                {x : top.x - 1, y : top.y - 1}, {x : top.x - 1, y : top.y + 1},
+            ]
+            for(let j = 0; j < cornerPoints.length; ++j){
+                let xn = cornerPoints[j].x;
+                let yn = cornerPoints[j].y;
+                let indexes = this.getColorIndicesForCoord(xn, yn, canvas.width, canvas.height);
+                if(this.checkEqualColor(imageData, indexes , startingColorIndex) && !vis[xn][yn]){
+                    stack.push(cornerPoints[j]);
+                    vis[xn][yn] = true;
+                    this.setNewColor(imageData, indexes, this.color);
+                }
             }
         }
-        let t2 = Date.now();
-        this.setNewColor(imageData, startingColorIndex);
+        this.setNewColor(imageData, startingColorIndex, this.color);
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.putImageData(id, 0, 0);
-        // console.log(t2 - t1);
+        let t2 = Date.now();
+        console.log(t2 - t1);
 
     }
 
@@ -125,49 +123,19 @@ class Canvas extends React.Component<Props, State>{
             let context = canvas.getContext('2d');
             canvas.height = canvas.clientHeight;
             canvas.width = canvas.clientWidth;
-            // let path = new Path2D();
-
-            // path.moveTo(10, 10);
-            // path.lineTo(20, 20);
-            // path.lineTo(30, 40);
-            // path.lineTo(20, 50);
-            // path.closePath();
-            // context?.fill(path);
-
 
             if(context){
-                // context.fillStyle = 'green';
-                // context?.fillRect(10, 10,  100, 100);
-                // context.fillStyle = 'red';
-                // context.fillRect(20, 20, 10, 10);
-                // context.clearRect(30, 30, 40, 30);
-                // context.beginPath();
-                // context.moveTo(10, 10);
-                // context.lineTo(201, 196);
-                // context.stroke();
-                // console.log(canvas.width,canvas.height)
-                // context.lineTo(25, 105);
-                // context.stroke();
-                // context.lineTo(125, 105);
-                // context.stroke();
-                
-                // context.closePath();
-                // context.stroke();
-
-                // context.lineTo(50, 105);
-                // context.stroke();
-
-                // context.fill();
-                // console.log('drawn');
-                context.lineWidth = 4;
+                context.lineWidth = this.lineWidth;
                 context.lineCap = 'round';
+                this.color = [255, 255, 255];
+                this.floodFillAlgo(context, canvas, 0, 0);
+                this.color = [0, 0, 0];
                 
                 canvas.addEventListener('mousemove',e=>{
-                    if(!draw || this.drawMode != 'color') return;
-                    console.log(e.offsetX);
+                    if(!draw || this.drawMode == 'fill') return;
                     context?.lineTo(e.offsetX, e.offsetY);
-                    // paths[paths.length - 1].lineTo(e.offsetX, e.offsetY);
                     context?.stroke();
+                    
                 });   
                 canvas.addEventListener('mousedown',e=>{
                     if(this.drawMode === 'fill'){
@@ -175,22 +143,29 @@ class Canvas extends React.Component<Props, State>{
                         return;
                     }
                     draw = true;
+                    context!.lineWidth = this.lineWidth;
                     context?.beginPath();
-                    // paths.push(new Path2D());
-                    // paths[paths.length-1].moveTo(e.offsetX, e.offsetY);
+                    context!.strokeStyle = this.drawMode === 'color'? this.colorString : '#ffffff';
                     context?.moveTo(e.offsetX, e.offsetY);
                 })
                 canvas.addEventListener('mouseup',e=>{
                     draw = false;
                     context?.beginPath();
-                    // context!.fillStyle = 'green';
-                    // context?.fill(paths[paths.length - 1])
-                    // context?.fill();
                 })
                 canvas.addEventListener('mouseout',e=>{
                     draw = false;
                     console.log('mouse left');
                 },false)
+                canvas.addEventListener('wheel', e=>{
+                    console.log('wheel');
+                    console.log(e.deltaY);
+                    if(e.deltaY > 0){
+                        this.lineWidth = max(1, this.lineWidth - 1);
+                    }
+                    else{
+                        this.lineWidth = min(12, this.lineWidth + 1);
+                    }
+                })
             }
             
             
@@ -201,15 +176,49 @@ class Canvas extends React.Component<Props, State>{
         return(
             <div style={{
                 display : 'flex',
-                flexDirection : 'column'
+                flexDirection : 'column',
+                // backgroundColor : 'red',
+                // justifyContent : 'center',
+                alignItems : 'center'
             }}>
                 <canvas ref={this.canvasRef} style={{
-                    height : "1000px",
-                    width : "1000px",
+                    height : "800px",
+                    width : "800px",
+                    borderWidth : '2px',
+                    border : 'solid'
                 }}/>
-                <div>
-                    <button title = 'color' onClick = {(e) => this.drawMode = 'color'} > Color </button>
-                    <button title = 'fill' onClick = {(e) => this.drawMode = 'fill'} > Fill </button>
+                <div style={{
+
+                }}>
+                    <div style={{
+                        margin : '2px',
+                        display : 'flex',
+                        alignItems : 'center'
+                    }}>
+                        <BiPencil style={{
+                            border : 'solid 2px',
+                            fontSize : 30
+                        }} onClick = {() => this.drawMode = 'color'} />
+                        <RiPaintFill style = {{
+                            border : 'solid 2px',
+                            fontSize : 30
+                        }} onClick = {() => this.drawMode = 'fill'}/>
+                        <input type = 'color' style={{
+                            margin : 0,
+                            padding : 0,
+                            height : 30,
+                            width : 30
+                        }} onChange = {(e)=>{
+                            this.color = this.hexToRGB(e.target.value);
+                            this.colorString = e.target.value;
+                        }}  />
+
+                        <BiEraser style = {{
+                            border : 'solid 2px',
+                            fontSize : 30
+                        }} onClick = {() => this.drawMode = 'erase'}/>
+
+                    </div>
                 </div>
             </div>
         )
