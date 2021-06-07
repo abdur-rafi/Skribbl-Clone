@@ -38,13 +38,13 @@ type points = {
 class Canvas extends React.Component<Props, State>{
 
     canvasRef : React.RefObject<HTMLCanvasElement>;
-    rectStartPoint : points;
+    shapeStartPoint : points;
     imageDataBeforeRectStart : ImageData | undefined;
 
     constructor(props : Props){
         super(props);
         this.canvasRef = React.createRef();
-        this.rectStartPoint = {
+        this.shapeStartPoint = {
             x : -1,
             y : -1
         };
@@ -149,7 +149,7 @@ class Canvas extends React.Component<Props, State>{
     }
 
     handleMouseDownDrawShape(context : CanvasRenderingContext2D,canvas :  HTMLCanvasElement, e : MouseEvent){
-        this.rectStartPoint = {
+        this.shapeStartPoint = {
             x : e.offsetX, y : e.offsetY
         }
         this.imageDataBeforeRectStart = context?.getImageData(0, 0, canvas.width, canvas.height);
@@ -173,7 +173,24 @@ class Canvas extends React.Component<Props, State>{
         if(this.imageDataBeforeRectStart){
             context?.clearRect(0, 0, canvas.width, canvas.height);
             context?.putImageData(this.imageDataBeforeRectStart,0, 0);
-            context?.strokeRect(this.rectStartPoint.x, this.rectStartPoint.y, e.offsetX - this.rectStartPoint.x, e.offsetY - this.rectStartPoint.y);
+            let x1 = this.shapeStartPoint.x, y1 = this.shapeStartPoint.y , x2 = e.offsetX, y2 = e.offsetY;
+            if(this.props.drawMode === 'rectangle')
+                context?.strokeRect(x1, y1, x2 - x1, y2 - y1);
+            else if(this.props.drawMode === 'circle'){
+                context.beginPath();
+                let diameter = Math.sqrt( (x1 - x2) ** 2  + (y1 - y2) ** 2)
+                context.arc((x2 + x1) / 2, (y1 + y2) / 2, diameter / 2,0, Math.PI * 2);
+                context.stroke();
+            }
+            else if(this.props.drawMode === 'triangle'){
+                context.beginPath();
+                context.moveTo(x1, y1);
+                context.lineTo(x2, y2);
+                context.lineTo(x1 -2 * (x2 - x1) / 2, y2);
+                context.closePath();
+                context.stroke();
+                // context.stroke
+            }
         }
     }
 
@@ -208,7 +225,7 @@ class Canvas extends React.Component<Props, State>{
                     if(this.props.drawMode === 'pen' || this.props.drawMode === 'eraser'){
                         this.handleMouseMovePenAndEraser(context!, e);
                     }
-                    else if(this.props.drawMode === 'rectangle'){
+                    else if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'circle' || this.props.drawMode === 'triangle'){
                         if(this.imageDataBeforeRectStart){
                             this.handleMouseMoveShape(context!, canvas, e);
                         }
@@ -225,7 +242,7 @@ class Canvas extends React.Component<Props, State>{
                     if(this.props.drawMode === 'pen' || this.props.drawMode === 'eraser'){
                         this.handleMouseDownForPenAndEraser(context!, e);
                     }
-                    else if(this.props.drawMode === 'rectangle'){
+                    else if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'circle' || this.props.drawMode === 'triangle'){
                         this.handleMouseDownDrawShape(context!, canvas!, e);
                     }
                 })

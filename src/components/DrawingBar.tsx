@@ -1,5 +1,5 @@
 import React from 'react'
-import {BiPencil, BiEraser,BiRectangle} from 'react-icons/bi'
+import {BiPencil, BiEraser,BiRectangle,BiCircle,BiUpArrow} from 'react-icons/bi'
 import {RiPaintFill} from 'react-icons/ri'
 import {drawMode} from '../typesAndInterfaces'
 
@@ -37,7 +37,9 @@ class DrawingBar extends React.Component<Props, State>{
 
                 <BiEraser className={'barItem'.concat(this.selected('eraser'))} onClick = {() => this.props.changeDrawMode('eraser')}/>
                 <BiRectangle onClick = {()=>this.props.changeDrawMode('rectangle')} className = {'barItem'.concat(this.selected('rectangle'))} />
-
+                <BiCircle onClick = {()=>this.props.changeDrawMode('circle')} className = {'barItem'.concat(this.selected('circle'))} />
+                <BiUpArrow onClick = {()=>this.props.changeDrawMode('triangle')} className = {'barItem'.concat(this.selected('triangle'))} />
+                
             </div>
            
         )

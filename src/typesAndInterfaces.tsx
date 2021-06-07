@@ -1,1 +1,1 @@
-export type drawMode = 'pen' | 'eraser' | 'paintFill' | 'rectangle';
+export type drawMode = 'pen' | 'eraser' | 'paintFill' | 'rectangle' | 'circle' | 'triangle';
