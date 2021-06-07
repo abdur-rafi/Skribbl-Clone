@@ -3,6 +3,7 @@ import * as React from 'react'
 import Canvas from './Canvas';
 import DrawingBar from './DrawingBar';
 import {drawMode} from '../typesAndInterfaces'
+import '../Stylesheets/DrawingBar.scss'
 interface State{
     drawMode : drawMode,
     color : string,
@@ -51,18 +52,29 @@ class DrawingBoard extends React.Component<Props, State>{
 
     render() : React.ReactNode{
         return(
-            <div style={{
-                display : 'flex',
-                flexDirection : 'column',
-                // backgroundColor : 'red',
-                // justifyContent : 'center',
-                alignItems : 'center',
-            }}>
+            <div className = 'DrawingBoardRoot'>
                 <Canvas drawMode = {this.state.drawMode} colorString = {this.state.color} lineWidth = {this.state.lineWidth} changeLineWidth = {this.changeLineWidht} />
                 <DrawingBar drawMode = {this.state.drawMode} color = {this.state.color} changeColor = {this.changeColor} changeDrawMode = {this.changeDrawMode} />
+                <Circle/>
             </div>
         )
     }
+}
+
+const Circle : React.FC<{}> = (props)=>{
+    return(
+        <div className='cursor' style={{
+            height : '40px',
+            width : '40px',
+            borderRadius : '50%',
+            backgroundColor : 'red',
+            position : 'absolute',
+            pointerEvents : 'none'
+            
+        }}>
+
+        </div>
+    )
 }
 
 export default DrawingBoard;

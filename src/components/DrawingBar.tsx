@@ -1,5 +1,5 @@
 import React from 'react'
-import {BiPencil, BiEraser} from 'react-icons/bi'
+import {BiPencil, BiEraser,BiRectangle} from 'react-icons/bi'
 import {RiPaintFill} from 'react-icons/ri'
 import {drawMode} from '../typesAndInterfaces'
 
@@ -19,40 +19,27 @@ class DrawingBar extends React.Component<Props, State>{
         super(props);
     }
 
+    selected(val : drawMode):string{
+
+        if(this.props.drawMode === val) return ' selected';
+
+        return '';
+    }
+
     render() : React.ReactNode{
         return(
-            <div style={{
+            <div className = 'drawingBarRoot'>
+                <BiPencil className={'barItem'.concat(this.selected('pen'))} onClick = {() => this.props.changeDrawMode('pen')} />
+                <RiPaintFill className={'barItem'.concat(this.selected('paintFill'))} onClick = {() => this.props.changeDrawMode('paintFill')}/>
+                <input className={'barItem'} type = 'color' onChange = {(e)=>{
+                    this.props.changeColor(e.target.value);
+                }}  />
 
-            }}>
-                <div style={{
-                    margin : '2px',
-                    display : 'flex',
-                    alignItems : 'center'
-                }}>
-                    <BiPencil style={{
-                        border : 'solid 2px',
-                        fontSize : 30
-                    }} onClick = {() => this.props.changeDrawMode('pen')} />
-                    <RiPaintFill style = {{
-                        border : 'solid 2px',
-                        fontSize : 30
-                    }} onClick = {() => this.props.changeDrawMode('paintFill')}/>
-                    <input type = 'color' style={{
-                        margin : 0,
-                        padding : 0,
-                        height : 30,
-                        width : 30
-                    }} onChange = {(e)=>{
-                        this.props.changeColor(e.target.value);
-                    }}  />
+                <BiEraser className={'barItem'.concat(this.selected('eraser'))} onClick = {() => this.props.changeDrawMode('eraser')}/>
+                <BiRectangle onClick = {()=>this.props.changeDrawMode('rectangle')} className = {'barItem'.concat(this.selected('rectangle'))} />
 
-                    <BiEraser style = {{
-                        border : 'solid 2px',
-                        fontSize : 30
-                    }} onClick = {() => this.props.changeDrawMode('eraser')}/>
-
-                </div>
             </div>
+           
         )
     }
 }

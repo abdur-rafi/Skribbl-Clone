@@ -1,0 +1,49 @@
+$selectedColor : blue;
+$canvasHeight : 700px;
+$canvasWidht : 700px;
+
+.DrawingBoardRoot{
+    display: flex;
+    flex-direction: column;
+    margin: 10;
+    align-items: center;
+
+    .canvas{
+        height : $canvasHeight;
+        width : $canvasWidht;
+        border : solid black 5px;
+        cursor : none;
+    }
+    .drawingBarRoot{
+        display: flex;
+        align-items: center;
+        // padding: 20;
+        justify-content: center;
+        // background-color: red;
+        width: $canvasWidht;
+        .barItem{
+            margin : 10px 10px 5px 10px ;
+            border : solid 2px;
+            font-size : 30px;
+        }
+        input{
+            border: solid 1px;
+            margin : 0px;
+            padding : 0px;
+            height : 30px;
+            width : 30px;
+        }
+        .selected{
+            color : blue;
+        }
+    }
+}
+.cursor{
+    height : 40px;
+    width : 40px;
+    border-radius : 50%;
+    background-color : black;
+    border: solid white .5px;
+    position : absolute;
+    pointer-events : none;
+}
