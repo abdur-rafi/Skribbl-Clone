@@ -1,7 +1,6 @@
 
-import * as React from 'react'
-import {BiPencil, BiEraser} from 'react-icons/bi'
-import {RiPaintFill} from 'react-icons/ri'
+import React from 'react'
+import { drawMode } from '../typesAndInterfaces';
 
 function min(x: number, y : number): number{
     if(x < y) return x;
@@ -12,11 +11,23 @@ function max(x : number, y : number) : number{
     return y;
 }
 
+function hexToRGB(hex: string) : number[] {
+
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+  
+    return [r, g, b]
+}
+
 interface State{
 
 }
 interface Props{
-
+    drawMode : drawMode ;
+    colorString : string;
+    lineWidth : number;
+    changeLineWidth : (widht : number) => void
 }
 
 type points = {
@@ -27,28 +38,13 @@ type points = {
 class Canvas extends React.Component<Props, State>{
 
     canvasRef : React.RefObject<HTMLCanvasElement>;
-    drawMode : 'color' | 'fill' | 'erase' ;
-    color : number[];
-    colorString : string;
-    lineWidth : number;
 
     constructor(props : Props){
         super(props);
         this.canvasRef = React.createRef();
-        this.drawMode = 'color';
-        this.color = [0, 0, 0];
-        this.colorString = '#000000';
-        this.lineWidth = 2;
     }
 
-    hexToRGB(hex: string) : number[] {
-
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-      
-        return [r, g, b]
-      }
+    
 
     getColorIndicesForCoord(x : number, y : number, width : number, height : number) : number[]{
         if (x < 0 || y < 0 || x >= width || y >= height) return [-1, -1, -1, -1];
@@ -65,11 +61,11 @@ class Canvas extends React.Component<Props, State>{
 
     checkEqualColor(imageData : Uint8ClampedArray, point1: number[], point2 : number[]): boolean{
         
-        return imageData[point1[0]] == imageData[point2[0]] &&  imageData[point1[1]] == imageData[point2[1]] &&  imageData[point1[2]] == imageData[point2[2]]
-        && imageData[point1[3]] == imageData[point2[3]]
+        return imageData[point1[0]] === imageData[point2[0]] &&  imageData[point1[1]] === imageData[point2[1]] &&  imageData[point1[2]] === imageData[point2[2]]
+        && imageData[point1[3]] === imageData[point2[3]]
     }
 
-    floodFillAlgo(context : CanvasRenderingContext2D, canvas : HTMLCanvasElement, x : number, y : number){
+    floodFillAlgo(context : CanvasRenderingContext2D, canvas : HTMLCanvasElement, x : number, y : number, color : number[]){
         let t1 = Date.now();
         let id = context.getImageData(0, 0,canvas.width, canvas.height );
         let imageData = id.data;
@@ -103,11 +99,11 @@ class Canvas extends React.Component<Props, State>{
                 if(this.checkEqualColor(imageData, indexes , startingColorIndex) && !vis[xn][yn]){
                     stack.push(cornerPoints[j]);
                     vis[xn][yn] = true;
-                    this.setNewColor(imageData, indexes, this.color);
+                    this.setNewColor(imageData, indexes, color);
                 }
             }
         }
-        this.setNewColor(imageData, startingColorIndex, this.color);
+        this.setNewColor(imageData, startingColorIndex, color);
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.putImageData(id, 0, 0);
         let t2 = Date.now();
@@ -118,6 +114,7 @@ class Canvas extends React.Component<Props, State>{
     componentDidMount(){
         const canvas = this.canvasRef.current;
         let draw = false;
+        let color : number[] = []
         if(canvas != null){
             
             let context = canvas.getContext('2d');
@@ -125,27 +122,28 @@ class Canvas extends React.Component<Props, State>{
             canvas.width = canvas.clientWidth;
 
             if(context){
-                context.lineWidth = this.lineWidth;
+                context.lineWidth = this.props.lineWidth;
                 context.lineCap = 'round';
-                this.color = [255, 255, 255];
-                this.floodFillAlgo(context, canvas, 0, 0);
-                this.color = [0, 0, 0];
+                color = [255, 255, 255];
+                this.floodFillAlgo(context, canvas, 0, 0, color);
+                color = [0, 0, 0];
                 
                 canvas.addEventListener('mousemove',e=>{
-                    if(!draw || this.drawMode == 'fill') return;
+                    if(!draw || this.props.drawMode === 'paintFill') return;
                     context?.lineTo(e.offsetX, e.offsetY);
                     context?.stroke();
                     
                 });   
                 canvas.addEventListener('mousedown',e=>{
-                    if(this.drawMode === 'fill'){
-                        this.floodFillAlgo(context!, canvas, e.offsetX, e.offsetY);
+                    if(this.props.drawMode === 'paintFill'){
+                        let color = hexToRGB(this.props.colorString);
+                        this.floodFillAlgo(context!, canvas, e.offsetX, e.offsetY,color);
                         return;
                     }
                     draw = true;
-                    context!.lineWidth = this.lineWidth;
+                    context!.lineWidth = this.props.lineWidth;
                     context?.beginPath();
-                    context!.strokeStyle = this.drawMode === 'color'? this.colorString : '#ffffff';
+                    context!.strokeStyle = this.props.drawMode === 'pen'? this.props.colorString : '#ffffff';
                     context?.moveTo(e.offsetX, e.offsetY);
                 })
                 canvas.addEventListener('mouseup',e=>{
@@ -160,10 +158,10 @@ class Canvas extends React.Component<Props, State>{
                     console.log('wheel');
                     console.log(e.deltaY);
                     if(e.deltaY > 0){
-                        this.lineWidth = max(1, this.lineWidth - 1);
+                        this.props.changeLineWidth(max(1, this.props.lineWidth - 1));
                     }
                     else{
-                        this.lineWidth = min(12, this.lineWidth + 1);
+                        this.props.changeLineWidth(min(12, this.props.lineWidth + 1));
                     }
                 })
             }
@@ -174,53 +172,13 @@ class Canvas extends React.Component<Props, State>{
 
     render() : React.ReactNode{
         return(
-            <div style={{
-                display : 'flex',
-                flexDirection : 'column',
-                // backgroundColor : 'red',
-                // justifyContent : 'center',
-                alignItems : 'center'
-            }}>
-                <canvas ref={this.canvasRef} style={{
-                    height : "800px",
-                    width : "800px",
-                    borderWidth : '2px',
-                    border : 'solid'
-                }}/>
-                <div style={{
-
-                }}>
-                    <div style={{
-                        margin : '2px',
-                        display : 'flex',
-                        alignItems : 'center'
-                    }}>
-                        <BiPencil style={{
-                            border : 'solid 2px',
-                            fontSize : 30
-                        }} onClick = {() => this.drawMode = 'color'} />
-                        <RiPaintFill style = {{
-                            border : 'solid 2px',
-                            fontSize : 30
-                        }} onClick = {() => this.drawMode = 'fill'}/>
-                        <input type = 'color' style={{
-                            margin : 0,
-                            padding : 0,
-                            height : 30,
-                            width : 30
-                        }} onChange = {(e)=>{
-                            this.color = this.hexToRGB(e.target.value);
-                            this.colorString = e.target.value;
-                        }}  />
-
-                        <BiEraser style = {{
-                            border : 'solid 2px',
-                            fontSize : 30
-                        }} onClick = {() => this.drawMode = 'erase'}/>
-
-                    </div>
-                </div>
-            </div>
+            <canvas ref={this.canvasRef} style={{
+                height : "800px",
+                width : "800px",
+                borderWidth : '2px',
+                border : 'solid',
+                cursor : 'pointer'
+            }}/>
         )
     }
 }
