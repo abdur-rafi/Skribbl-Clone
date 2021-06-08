@@ -1,6 +1,23 @@
 $selectedColor : blue;
-$canvasHeight : 700px;
+$canvasHeight : 800px;
 $canvasWidht : 700px;
+
+.main{
+    // background-color: red;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.chat-bar{
+    width: 300px;
+    background-color: rgb(180, 197, 159);
+}
+
+.players-bar{
+    background-color: rgb(128, 115, 115);
+    width: 300px;
+}
 
 .DrawingBoardRoot{
     display: flex;

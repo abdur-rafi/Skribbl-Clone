@@ -4,30 +4,33 @@ import Canvas from './Canvas';
 import DrawingBar from './DrawingBar';
 import {drawMode} from '../typesAndInterfaces'
 import '../Stylesheets/DrawingBar.scss'
+
+
+
 interface State{
     drawMode : drawMode,
     color : string,
     lineWidth : number
 }
 interface Props{
-
 }
 
 
 class DrawingBoard extends React.Component<Props, State>{
-
 
     constructor(props: Props){
         super(props);
         this.state = {
             drawMode : 'pen',
             color : '#000000',
-            lineWidth : 3
+            lineWidth : 10
         }
         this.changeDrawMode = this.changeDrawMode.bind(this);
         this.changeColor = this.changeColor.bind(this);
         this.changeLineWidht = this.changeLineWidht.bind(this);
     }
+
+    
 
     changeDrawMode(mode:drawMode){
         this.setState({
@@ -48,12 +51,21 @@ class DrawingBoard extends React.Component<Props, State>{
     }
 
     componentDidMount(){
+        // console.log('connected');
+        // this.props.socket.emit('test', {
+        //     message : 'message'
+        // })
+        // this.props.socket.on('test', data=>{
+        //     console.log('upper')
+        //     console.log(data);
+        // })
+        
     }
 
     render() : React.ReactNode{
         return(
             <div className = 'DrawingBoardRoot'>
-                <Canvas drawMode = {this.state.drawMode} colorString = {this.state.color} lineWidth = {this.state.lineWidth} changeLineWidth = {this.changeLineWidht} />
+                <Canvas  drawMode = {this.state.drawMode} colorString = {this.state.color} lineWidth = {this.state.lineWidth} changeLineWidth = {this.changeLineWidht} />
                 <DrawingBar drawMode = {this.state.drawMode} color = {this.state.color} changeColor = {this.changeColor} changeDrawMode = {this.changeDrawMode} />
                 <Circle/>
             </div>
@@ -64,8 +76,8 @@ class DrawingBoard extends React.Component<Props, State>{
 const Circle : React.FC<{}> = (props)=>{
     return(
         <div className='cursor' style={{
-            height : '40px',
-            width : '40px',
+            height : '10px',
+            width : '10px',
             borderRadius : '50%',
             backgroundColor : 'red',
             position : 'absolute',

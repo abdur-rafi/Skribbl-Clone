@@ -1,6 +1,9 @@
 
 import React from 'react'
-import { drawMode } from '../typesAndInterfaces';
+import { drawMode, eventAndCoord,mouseSocketEvent } from '../typesAndInterfaces';
+import {io, Socket} from 'socket.io-client'
+import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
+import {socket } from '../io'
 
 function min(x: number, y : number): number{
     if(x < y) return x;
@@ -135,27 +138,27 @@ class Canvas extends React.Component<Props, State>{
 
     }
 
-    handleMouseDownForPenAndEraser(context : CanvasRenderingContext2D, e : MouseEvent){
+    handleMouseDownForPenAndEraser(context : CanvasRenderingContext2D, e : MouseEvent | eventAndCoord, drawMode : drawMode){
         context?.beginPath();
-        if(this.props.drawMode === 'eraser'){
+        if(drawMode === 'eraser'){
             context!.strokeStyle ='#ffffff';
         }
         context?.moveTo(e.offsetX, e.offsetY);
     }
 
-    handleMouseDownPaintFill(context : CanvasRenderingContext2D,canvas :  HTMLCanvasElement, e : MouseEvent){
-        let color = hexToRGB(this.props.colorString);
+    handleMouseDownPaintFill(context : CanvasRenderingContext2D,canvas :  HTMLCanvasElement, e : MouseEvent | eventAndCoord , colorString : string){
+        let color = hexToRGB(colorString);
         this.floodFillAlgo(context!, canvas, e.offsetX, e.offsetY,color);
     }
 
-    handleMouseDownDrawShape(context : CanvasRenderingContext2D,canvas :  HTMLCanvasElement, e : MouseEvent){
+    handleMouseDownDrawShape(context : CanvasRenderingContext2D,canvas :  HTMLCanvasElement, e : MouseEvent | eventAndCoord){
         this.shapeStartPoint = {
             x : e.offsetX, y : e.offsetY
         }
         this.imageDataBeforeRectStart = context?.getImageData(0, 0, canvas.width, canvas.height);
     }
 
-    handleCursorMovement(canvas : HTMLCanvasElement, cursor : HTMLElement, e : MouseEvent){
+    handleCursorMovement(canvas : HTMLCanvasElement, cursor : HTMLElement, e : MouseEvent | eventAndCoord){
         let rect = canvas.getBoundingClientRect();
                     
         if(cursor){
@@ -164,12 +167,28 @@ class Canvas extends React.Component<Props, State>{
         }
     }
 
-    handleMouseMovePenAndEraser(context : CanvasRenderingContext2D, e : MouseEvent ){
+    handleMouseMovePenAndEraser(context : CanvasRenderingContext2D, e : MouseEvent | eventAndCoord){
         context?.lineTo(e.offsetX, e.offsetY);
         context?.stroke();
     }
 
-    handleMouseMoveShape(context : CanvasRenderingContext2D, canvas : HTMLCanvasElement, e : MouseEvent){
+    drawCircle(context : CanvasRenderingContext2D, x1: number, y1 : number, x2:number, y2 : number){
+        context.beginPath();
+        let diameter = Math.sqrt( (x1 - x2) ** 2  + (y1 - y2) ** 2)
+        context.arc((x2 + x1) / 2, (y1 + y2) / 2, diameter / 2,0, Math.PI * 2);
+        context.stroke();
+    }
+
+    drawTraingle(context : CanvasRenderingContext2D, x1: number, y1 : number, x2:number, y2 : number){
+        context.beginPath();
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.lineTo(x1 -2 * (x2 - x1) / 2, y2);
+        context.closePath();
+        context.stroke();
+    }
+
+    handleMouseMoveShape(context : CanvasRenderingContext2D, canvas : HTMLCanvasElement, e : MouseEvent | eventAndCoord){
         if(this.imageDataBeforeRectStart){
             context?.clearRect(0, 0, canvas.width, canvas.height);
             context?.putImageData(this.imageDataBeforeRectStart,0, 0);
@@ -177,10 +196,7 @@ class Canvas extends React.Component<Props, State>{
             if(this.props.drawMode === 'rectangle')
                 context?.strokeRect(x1, y1, x2 - x1, y2 - y1);
             else if(this.props.drawMode === 'circle'){
-                context.beginPath();
-                let diameter = Math.sqrt( (x1 - x2) ** 2  + (y1 - y2) ** 2)
-                context.arc((x2 + x1) / 2, (y1 + y2) / 2, diameter / 2,0, Math.PI * 2);
-                context.stroke();
+                this.drawCircle(context, x1, y1, x2, y2);
             }
             else if(this.props.drawMode === 'triangle'){
                 context.beginPath();
@@ -194,85 +210,166 @@ class Canvas extends React.Component<Props, State>{
         }
     }
 
+    handleMouseMove(e : MouseEvent | eventAndCoord){
+
+    }
+
     componentDidMount(){
+
+        
+        
+
+
         const canvas = this.canvasRef.current;
         let draw = false;
         let color : number[] = []
-        if(canvas != null){
-            
-            let context = canvas.getContext('2d');
-            canvas.height = canvas.clientHeight;
-            canvas.width = canvas.clientWidth;
+        if(canvas === null) return;
+        let context = canvas.getContext('2d');
+        if(context === null) return;
+        canvas.height = canvas.clientHeight;
+        canvas.width = canvas.clientWidth;
 
-            if(context){
-                context.lineWidth = this.props.lineWidth;
-                context.lineCap = 'round';
-                color = [255, 255, 255];
-                this.floodFillAlgo(context, canvas, 0, 0, color);
-                color = [0, 0, 0];
-                const cursor : HTMLElement | null = document.querySelector('.cursor');
-                
-                canvas.addEventListener('mouseenter', e =>{
-                    if(cursor){
-                        cursor.style.display = 'inline';
-                        cursor.style.backgroundColor = this.props.colorString;
-                    }
-                })
-                
-                canvas.addEventListener('mousemove',e=>{
-                    this.handleCursorMovement(canvas, cursor!, e);
-                    if(!draw || this.props.drawMode === 'paintFill') return;
-                    if(this.props.drawMode === 'pen' || this.props.drawMode === 'eraser'){
-                        this.handleMouseMovePenAndEraser(context!, e);
-                    }
-                    else if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'circle' || this.props.drawMode === 'triangle'){
-                        if(this.imageDataBeforeRectStart){
-                            this.handleMouseMoveShape(context!, canvas, e);
-                        }
-                    }
-                    
-                });   
-                canvas.addEventListener('mousedown',e=>{
-                    draw = true;
-                    context!.lineWidth = this.props.lineWidth;
-                    context!.strokeStyle = this.props.colorString;
-                    if(this.props.drawMode === 'paintFill'){
-                        this.handleMouseDownPaintFill(context!, canvas, e);
-                    }
-                    if(this.props.drawMode === 'pen' || this.props.drawMode === 'eraser'){
-                        this.handleMouseDownForPenAndEraser(context!, e);
-                    }
-                    else if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'circle' || this.props.drawMode === 'triangle'){
-                        this.handleMouseDownDrawShape(context!, canvas!, e);
-                    }
-                })
-                canvas.addEventListener('mouseup',e=>{
-                    draw = false;
-                    context?.beginPath();
-                })
-                canvas.addEventListener('mouseout',e=>{
-                    draw = false;
-                    if(cursor){
-                        cursor.style.display = 'none';
-                    }
-                },false);
-                canvas.addEventListener('wheel', e=>{
-                    if(e.deltaY > 0){
-                        this.props.changeLineWidth(max(1, this.props.lineWidth - 1));
-                    }
-                    else{
-                        this.props.changeLineWidth(min(30, this.props.lineWidth + 1));
-                    }
-                    if(cursor){
-                        cursor.style.height = cursor.style.width = `${this.props.lineWidth}px`;
-                        cursor.style.borderRadius = '50%';
-                    }
-                })
+        context.lineWidth = this.props.lineWidth;
+        context.lineCap = 'round';
+        color = [255, 255, 255];
+        this.floodFillAlgo(context, canvas, 0, 0, color);
+        color = [0, 0, 0];
+        const cursor : HTMLElement | null = document.querySelector('.cursor');
+        
+        canvas.addEventListener('mouseenter', e =>{
+            if(cursor){
+                cursor.style.display = 'inline';
+                cursor.style.backgroundColor = this.props.colorString;
             }
+        })
+        
+        canvas.addEventListener('mousemove',e=>{
+            this.handleCursorMovement(canvas, cursor!, e);
+            if(!draw || this.props.drawMode === 'paintFill') return;
+            if(this.props.drawMode === 'pen' || this.props.drawMode === 'eraser'){
+                let socketData : mouseSocketEvent = {
+                    event : 'line',
+                    offsetX : e.offsetX,
+                    offsetY : e.offsetY,
+                    lineWidht : this.props.lineWidth,
+                    color : this.props.colorString
+                }
+                socket.emit('drawEvent',socketData);
+                this.handleMouseMovePenAndEraser(context!, e);
+            }
+            else if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'circle' || this.props.drawMode === 'triangle'){
+                if(this.imageDataBeforeRectStart){
+                    this.handleMouseMoveShape(context!, canvas, e);
+                }
+            } 
             
-            
+        });   
+        canvas.addEventListener('mousedown',e=>{
+            draw = true;
+            context!.lineWidth = this.props.lineWidth;
+            context!.strokeStyle = this.props.colorString;
+            let socketData : mouseSocketEvent ={
+                event : this.props.drawMode === 'paintFill' ? 'fill' : 'mousedown',
+                offsetX : e.offsetX,
+                offsetY : e.offsetY,
+                lineWidht : this.props.lineWidth,
+                color : this.props.drawMode === 'eraser' ? '#ffffff' : this.props.colorString
+            }
+            socket.emit('drawEvent',socketData);
+            if(this.props.drawMode === 'paintFill'){
+                this.handleMouseDownPaintFill(context!, canvas, e, this.props.colorString);
+            }
+            if(this.props.drawMode === 'pen' || this.props.drawMode === 'eraser'){
+                this.handleMouseDownForPenAndEraser(context!, e, this.props.drawMode);
+            }
+            else if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'circle' || this.props.drawMode === 'triangle'){
+                this.handleMouseDownDrawShape(context!, canvas!, e);
+            }
+        })
+        canvas.addEventListener('mouseup',e=>{
+            if(draw){
+                if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'triangle' || this.props.drawMode === 'circle'){
+                    socket.emit('drawEvent', this.createShapeSocketEvent(e, this.props.drawMode));
+                }
+            }
+            draw = false;
+            context?.beginPath();
+        })
+        canvas.addEventListener('mouseout',e=>{
+            if(draw){
+                if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'triangle' || this.props.drawMode === 'circle'){
+                    this.handleMouseMoveShape(context!, canvas, e);
+                    socket.emit('drawEvent', this.createShapeSocketEvent(e, this.props.drawMode));
+                }
+            }
+            draw = false;
+            if(cursor){
+                cursor.style.display = 'none';
+            }
+        },false);
+        canvas.addEventListener('wheel', e=>{
+            e.preventDefault();
+            if(e.deltaY > 0){
+                this.props.changeLineWidth(max(1, this.props.lineWidth - 1));
+            }
+            else{
+                this.props.changeLineWidth(min(30, this.props.lineWidth + 1));
+            }
+            if(cursor){
+                cursor.style.height = cursor.style.width = `${this.props.lineWidth}px`;
+                cursor.style.borderRadius = '50%';
+            }
+        })
+        
+        socket.emit('test', {
+            message : 'message'
+        })
+
+        socket.on('drawEvent', (data:mouseSocketEvent)=>{
+            let e : eventAndCoord = {
+                offsetX : data.offsetX,
+                offsetY : data.offsetY
+            }
+            // console.log(data);
+            if(data.event === 'fill'){
+                
+                this.handleMouseDownPaintFill(context!, canvas,e, data.color);
+            }
+            else if(data.event === 'mousedown'){
+                context!.strokeStyle = data.color;
+                context!.lineWidth = data.lineWidht;
+                this.handleMouseDownForPenAndEraser(context!,e,'pen');
+            }
+            else if(data.event === 'line'){
+                this.handleMouseMovePenAndEraser(context!,e);
+            }
+            else if(data.event === 'rectangle'){
+                context!.strokeStyle = data.color;
+                context?.strokeRect(data.startX!, data.startY!, data.offsetX - data.startX!, data.offsetY - data.startY!);
+            }
+            else if(data.event === 'circle'){
+                this.drawCircle(context!, data.startX!, data.startY!, data.offsetX, data.offsetY);
+            }
+            else if(data.event === 'triangle'){
+                this.drawTraingle(context!, data.startX!, data.startY!, data.offsetX, data.offsetY);
+            }
+
+        })
+
+    }
+
+    createShapeSocketEvent(e : MouseEvent, event : mouseSocketEvent['event']):mouseSocketEvent{
+        return {
+            event : event,
+            offsetX : e.offsetX,
+            offsetY : e.offsetY,
+            lineWidht : this.props.lineWidth,
+            color : this.props.colorString,
+            startX : this.shapeStartPoint.x,
+            startY : this.shapeStartPoint.y
         }
     }
+
 
     
 
