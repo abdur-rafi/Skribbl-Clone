@@ -30,6 +30,7 @@ $canvasWidht : 700px;
         width : $canvasWidht;
         border : solid black 5px;
         cursor : none;
+        pointer-events: none;
     }
     .drawingBarRoot{
         display: flex;

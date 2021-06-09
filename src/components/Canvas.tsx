@@ -4,6 +4,7 @@ import { drawMode, eventAndCoord,mouseSocketEvent } from '../typesAndInterfaces'
 import {io, Socket} from 'socket.io-client'
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
 import {socket } from '../io'
+import { drawerImageData, sendImageData } from '../socketEventsTypes';
 
 function min(x: number, y : number): number{
     if(x < y) return x;
@@ -354,6 +355,38 @@ class Canvas extends React.Component<Props, State>{
                 this.drawTraingle(context!, data.startX!, data.startY!, data.offsetX, data.offsetY);
             }
 
+        })
+
+        socket.on('sendImageData', (data : sendImageData) => {
+            console.log(data);
+            
+            if(context){
+                let d : drawerImageData = {
+                    imageData : canvas.toDataURL(),
+                    to : data.to
+                }
+                socket.emit('drawerImageData',d);
+            }
+        })
+
+        socket.on('drawerImageData', (data : drawerImageData)=>{
+            // console.log(data.imageData);
+            let img = new Image;
+            img.src = data.imageData;
+            img.onload = ()=>{   
+                context?.drawImage(img, 0, 0);
+            }
+        })
+
+        socket.on('newDrawer',data => {
+            console.log(data);
+            canvas.style.pointerEvents = 'none';
+        })
+
+        socket.on('selfDrawer', data=>{
+            console.log(data);
+            canvas.style.pointerEvents = 'all';
+            // alert('You are the drawer');
         })
 
     }
