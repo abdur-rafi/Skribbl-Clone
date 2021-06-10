@@ -14,3 +14,9 @@ export interface mouseSocketEvent{
     startX? : number,
     startY? : number
 }
+
+export type rootStatus = 'home' | 'canvas';
+
+// export interface player{
+    
+// }

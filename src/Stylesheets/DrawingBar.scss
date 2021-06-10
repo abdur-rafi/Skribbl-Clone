@@ -1,5 +1,5 @@
 $selectedColor : blue;
-$canvasHeight : 800px;
+$canvasHeight : 700px;
 $canvasWidht : 700px;
 
 .main{
@@ -12,6 +12,9 @@ $canvasWidht : 700px;
 .chat-bar{
     width: 300px;
     background-color: rgb(180, 197, 159);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .players-bar{

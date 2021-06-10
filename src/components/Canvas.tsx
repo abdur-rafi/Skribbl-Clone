@@ -3,7 +3,7 @@ import React from 'react'
 import { drawMode, eventAndCoord,mouseSocketEvent } from '../typesAndInterfaces';
 import {io, Socket} from 'socket.io-client'
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
-import {socket } from '../io'
+import {socket } from './Home'
 import { drawerImageData, sendImageData } from '../socketEventsTypes';
 
 function min(x: number, y : number): number{
@@ -211,14 +211,8 @@ class Canvas extends React.Component<Props, State>{
         }
     }
 
-    handleMouseMove(e : MouseEvent | eventAndCoord){
-
-    }
 
     componentDidMount(){
-
-        
-        
 
 
         const canvas = this.canvasRef.current;

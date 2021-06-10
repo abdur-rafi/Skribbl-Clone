@@ -3,22 +3,34 @@ import {io, Socket} from 'socket.io-client'
 import Chat from './chat';
 import DrawingBoard from './DrawingBoard';
 import Players from './players';
+import {socket } from './Home'
 import * as constants from '../constants';
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
 
+interface State{
+    drawer : string
+}
 
-class Main extends React.Component<{},{}>{
+interface Props{
 
+}
+
+class Main extends React.Component<Props, State>{
+
+    constructor(props : Props){
+        super(props);
+    }
+    
 
     componentDidMount(){
-        // this.socket = io(constants.url);
+
     }
 
 
     render() : React.ReactNode {
         return(
             <div className = 'main' >
-                <Players />
+                <Players/>
                 <DrawingBoard />
                 <Chat />
             </div>
