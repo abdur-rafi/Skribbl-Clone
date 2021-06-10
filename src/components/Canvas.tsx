@@ -5,6 +5,7 @@ import {io, Socket} from 'socket.io-client'
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
 import {socket } from './Home'
 import { drawerImageData, sendImageData } from '../socketEventsTypes';
+import ReactModal from 'react-modal';
 
 function min(x: number, y : number): number{
     if(x < y) return x;
@@ -25,7 +26,9 @@ function hexToRGB(hex: string) : number[] {
 }
 
 interface State{
-
+    isModalOpen : boolean,
+    words : string[],
+    chosenWord : string
 }
 interface Props{
     drawMode : drawMode ;
@@ -48,11 +51,17 @@ class Canvas extends React.Component<Props, State>{
     constructor(props : Props){
         super(props);
         this.canvasRef = React.createRef();
+        this.state = {
+            isModalOpen : false,
+            words : [],
+            chosenWord : ''
+        }
         this.shapeStartPoint = {
             x : -1,
             y : -1
         };
         this.imageDataBeforeRectStart = undefined;
+        this.onWordChosen = this.onWordChosen.bind(this);
     }
 
     
@@ -375,14 +384,46 @@ class Canvas extends React.Component<Props, State>{
         socket.on('newDrawer',data => {
             console.log(data);
             canvas.style.pointerEvents = 'none';
+            this.setState({
+                chosenWord : ''
+            })
+            context?.clearRect(0, 0, canvas.width,canvas.height);
         })
 
         socket.on('selfDrawer', data=>{
             console.log(data);
             canvas.style.pointerEvents = 'all';
+            this.setState({
+                words : data.words,
+                isModalOpen : true
+            })
+            context?.clearRect(0, 0, canvas.width,canvas.height);
             // alert('You are the drawer');
         })
 
+        socket.on('chosenWord', data=>{
+            this.setState({
+                chosenWord : data.word,
+                isModalOpen : false
+            })
+        })
+
+        socket.on('chosenWordLenght',data=>{
+            let gap : string = '';
+            for(let i = 0; i < data.length; ++i)
+                gap += '_ ';
+            this.setState({
+                chosenWord : gap
+            })
+        })
+
+    }
+
+    onWordChosen(word : string){
+        socket.emit('chosenWord', {
+            word : word
+        })
+        
     }
 
     createShapeSocketEvent(e : MouseEvent, event : mouseSocketEvent['event']):mouseSocketEvent{
@@ -402,9 +443,58 @@ class Canvas extends React.Component<Props, State>{
 
     render() : React.ReactNode{
         return(
-            <canvas className = 'canvas' ref={this.canvasRef}/>
+            <div>
+                <div>{this.state.chosenWord}</div>
+                <canvas className = 'canvas' ref={this.canvasRef}/>
+                <Modal onWordChosen = {this.onWordChosen} words={this.state.words} isModalOpen = {this.state.isModalOpen} />
+            </div>
         )
     }
+}
+
+const Modal : React.FC<{
+    isModalOpen : boolean,
+    words : string[],
+    onWordChosen : (word : string) => void
+}> = (props)=>{
+    let w = props.words.map(w=>(
+        <div style={{
+            margin : 10,
+            padding : 5,
+            border : 'solid 1px black',
+            
+        }} onClick = {()=>props.onWordChosen(w)}>
+            {w}
+        </div>
+    ))
+    return(
+
+        <ReactModal isOpen = {props.isModalOpen} style={{
+            content : {
+                top : '40%',
+                left : '35%',
+                right : '35%',
+                bottom : '40%',
+                backgroundColor : 'transparent',
+                display : 'flex',
+                justifyContent : 'center',
+                alignItems : 'center'
+                
+            },
+            overlay : {
+                
+            }
+        }} >
+            <div style = {{
+                // backgroundColor : 'red'
+                display : 'flex',
+                flexDirection : 'row',
+                fontSize : '1.5em'
+            }}>
+                {w}
+            </div>
+        </ReactModal>
+    )
 }
 
 export default Canvas;
