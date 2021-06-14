@@ -1,8 +1,6 @@
 
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { drawMode, eventAndCoord,mouseSocketEvent } from '../typesAndInterfaces';
-import {io, Socket} from 'socket.io-client'
-import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
 import {socket } from './Home'
 import { drawerImageData, sendImageData } from '../socketEventsTypes';
 import ReactModal from 'react-modal';
@@ -438,18 +436,50 @@ class Canvas extends React.Component<Props, State>{
         }
     }
 
-
-    
-
     render() : React.ReactNode{
         return(
             <div>
                 <div>{this.state.chosenWord}</div>
+                <div><Timer/></div>
                 <canvas className = 'canvas' ref={this.canvasRef}/>
                 <Modal onWordChosen = {this.onWordChosen} words={this.state.words} isModalOpen = {this.state.isModalOpen} />
             </div>
         )
     }
+}
+
+const Timer : React.FC<{}> = (props) =>{
+
+    const [time, setTime ] = useState<number>(40);
+
+    function decreaseTime(){
+        // console.log(time);
+        setTime(time => max(0, time - 1));
+    }
+
+
+
+    useEffect(()=>{
+        const id = setInterval(decreaseTime,1000);
+        return ()=>{
+            clearInterval(id);
+        }
+    },[])
+
+    useEffect(()=>{
+        socket.on('setTimer', (data)=>{
+            setTime(Math.floor(data.time / 1000));
+        });
+    }, []);
+
+    return(
+        <div>
+            {time}
+            <div>
+                <button onClick = {()=>setTime(30)}> change time</button>
+            </div>
+        </div>
+    )
 }
 
 const Modal : React.FC<{

@@ -11,3 +11,9 @@ export type player = {
     socketId : string,
     userName : string
 }
+
+export type member = {
+    socketId : string,
+    score : number,
+    userName : string
+}

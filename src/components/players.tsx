@@ -1,8 +1,8 @@
 import React from 'react';
-import { player } from '../socketEventsTypes';
+import { player, member } from '../socketEventsTypes';
 import {socket} from './Home'
 interface State{
-    players : player[],
+    members : member[],
     drawer : player
 }
 
@@ -16,7 +16,7 @@ class Players extends React.Component<Props, State>{
     constructor(props : Props){
         super(props);
         this.state = {
-            players : [],
+            members : [],
             drawer : {
                 socketId : '',
                 userName : ''
@@ -28,7 +28,7 @@ class Players extends React.Component<Props, State>{
         socket.on('updatePlayers', data=>{
             console.log(data);
             this.setState({
-                players : data.players
+                members : data.members
             })
         })
         socket.on('updateDrawer', data=>{
@@ -41,9 +41,9 @@ class Players extends React.Component<Props, State>{
 
 
     render():React.ReactNode{
-        let items = this.state.players.map(p =>(
+        let items = this.state.members.map(m =>(
             <div>
-                {p.userName}
+                {m.userName + ' score : ' + m.score}
             </div>
         ))
         return(
