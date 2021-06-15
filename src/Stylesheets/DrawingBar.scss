@@ -1,6 +1,28 @@
 $selectedColor : blue;
-$canvasHeight : 700px;
+$canvasHeight : 580px;
 $canvasWidht : 700px;
+
+html{
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}
+body{
+    margin: 0px;
+    // padding: 5px;
+    height: 100%;
+    width: 100%;
+    background-color: #00afb9 ;
+}
+#root{
+    // background-color: red;
+    padding: 10px;
+    height: calc(100% - 20px);
+}
+// .root-div{
+//     // height: calc(100% - 20px);
+//     // padding: 10px;
+// }
 
 .main{
     // background-color: red;
@@ -10,38 +32,127 @@ $canvasWidht : 700px;
 }
 
 .chat-bar{
+    // border: solid 2px rgb(0, 0, 0);
+    margin: .2em;
+    margin-top: 0em;
+    padding: .5em;
+    // border-style :inset;
     width: 300px;
-    background-color: rgb(180, 197, 159);
+    background-color: #fdfcdc;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    .messageList{
+        overflow-y: scroll;
+        height: 600px;
+        // background-color: red;
+        .messageItem{
+            // background-color: #fed9b7;
+            color: #403E04;
+            border-radius: .3em;
+            margin : .2em;
+            padding : .6em;
+            border: solid 1.5px rgb(150, 148, 148);
+            display: flex;
+            flex-direction: row;
+            background-color: white;
+            .userName{
+                // flex-grow: 1;
+                margin-right: .2em;
+                display: inline;
+                color: green;
+                font-weight: bold;
+                
+                // background-color: white;
+                // overflow: hidden;
+                // white-space: nowrap;
+                // text-overflow: ellipsis;
+                // width: 70px;
+                // font-size: 1em;
+                
+            }
+            .messageDiv{
+                // word-break: break-all;
+                // word-wrap: break-word;
+                // flex-grow: 1;
+                font-size: 1.1em;
+                font-weight: 400;
+            }
+        }
+        
+    }
+    .textInput-div{
+        // margin: 5px;
+        padding: .2em;
+        display: flex;
+        flex-direction: row;
+        input{
+            flex-grow: 1;
+            font-size: 1rem;
+            height: 1.5em;
+        }
+    }
 }
 
 .players-bar{
-    background-color: rgb(128, 115, 115);
+    background-color: #FDFCDC;
     width: 300px;
+    margin: .2em;
+    margin-top: 0em;
+    .playerItem{
+        margin: .2em;
+        background-color: white;
+        border: solid 1px black;
+        border-radius: .3em;
+        padding: .3em;
+        .scoreDiv{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
 }
 
 .DrawingBoardRoot{
     display: flex;
     flex-direction: column;
-    margin: 10;
+    // margin: 10;
     align-items: center;
+    
+
+    .canvasContainer{
+        .top{
+            background-color: #FED9B7;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
 
     .canvas{
         height : $canvasHeight;
         width : $canvasWidht;
-        border : solid black 5px;
+        // border : solid black 1px;
+        margin: 0em;
+        padding: 0em;
         cursor : none;
         pointer-events: none;
+        canvas{
+            margin : 0px;
+            padding: 0px;
+            display: block;
+        }
     }
     .drawingBarRoot{
         display: flex;
+        position: relative;
+        top: -2.5px;
         align-items: center;
         // padding: 20;
         justify-content: center;
         // background-color: red;
         width: $canvasWidht;
+        background-color: #F07167;
         .barItem{
             margin : 10px 10px 5px 10px ;
             border : solid 2px;

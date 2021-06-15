@@ -245,6 +245,11 @@ class Canvas extends React.Component<Props, State>{
             }
         })
         
+        canvas.addEventListener('resize',(e)=>{
+            canvas.height = canvas.clientHeight;
+            canvas.width = canvas.clientWidth;
+        })
+
         canvas.addEventListener('mousemove',e=>{
             this.handleCursorMovement(canvas, cursor!, e);
             if(!draw || this.props.drawMode === 'paintFill') return;
@@ -438,9 +443,12 @@ class Canvas extends React.Component<Props, State>{
 
     render() : React.ReactNode{
         return(
-            <div>
-                <div>{this.state.chosenWord}</div>
-                <div><Timer/></div>
+            <div className='canvasContainer'>
+                <div className='top'>
+                    <div><Timer/></div>
+                    <div>{this.state.chosenWord}</div>
+                </div>
+                
                 <canvas className = 'canvas' ref={this.canvasRef}/>
                 <Modal onWordChosen = {this.onWordChosen} words={this.state.words} isModalOpen = {this.state.isModalOpen} />
             </div>
@@ -450,7 +458,7 @@ class Canvas extends React.Component<Props, State>{
 
 const Timer : React.FC<{}> = (props) =>{
 
-    const [time, setTime ] = useState<number>(40);
+    const [time, setTime ] = useState<number>(0);
 
     function decreaseTime(){
         // console.log(time);
@@ -475,9 +483,6 @@ const Timer : React.FC<{}> = (props) =>{
     return(
         <div>
             {time}
-            <div>
-                <button onClick = {()=>setTime(30)}> change time</button>
-            </div>
         </div>
     )
 }

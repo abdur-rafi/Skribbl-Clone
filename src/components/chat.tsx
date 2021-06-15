@@ -39,15 +39,27 @@ class Chat extends React.Component<Props, State>{
     }
 
     render():React.ReactNode{
+        let index = 0;
         let m = this.state.messages.map(m => (
-            <div>
-                { m.sender.userName + " : " + m.message}
+            <div className='messageItem' key={index++}>
+                {/* {m.sender.userName + ': ' + m.message} */}
+                <div className='userName'>
+                        {m.sender.userName}
+                </div>
+                <div className='messageDiv'>
+                    <div>
+                        { ': ' + m.message}
+                    </div>
+                </div>
+                {/* { m.sender.userName + " : " + m.message} */}
             </div>
         ))
         return(
             <div className = 'chat-bar'>
-                {m}
-                <div>
+                <div className='messageList'>
+                    {m}
+                </div>
+                <div className='textInput-div'>
                     <input type='text' value = {this.state.value} onChange = {e=>this.setState({
                         value : e.target.value
                     })} />
