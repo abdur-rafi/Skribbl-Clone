@@ -6,6 +6,8 @@ import { rootStatus } from '../typesAndInterfaces';
 let socket : Socket;
 
 function joinRoom(userName : string){
+    console.log(constants.DEVELOPMENT);
+    console.log(constants.DEVELOPMENT ? constants.localUrl : constants.serverUrl );
     socket = io(constants.DEVELOPMENT ? constants.localUrl : constants.serverUrl , {
         transports : ['websocket'],
         query : {

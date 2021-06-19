@@ -60,10 +60,17 @@ class Chat extends React.Component<Props, State>{
                     {m}
                 </div>
                 <div className='textInput-div'>
-                    <input type='text' value = {this.state.value} onChange = {e=>this.setState({
+                    <input type='text' value = {this.state.value} placeholder='Enter your guess here' onChange = {e=>this.setState({
                         value : e.target.value
-                    })} />
-                    <button onClick = {this.sendMessage}> Send </button>
+                    })} onKeyPress = {e => {
+                        if(!e.shiftKey && e.key == 'Enter'){
+                            this.sendMessage();
+                            this.setState({
+                                value : ''
+                            })
+                        }
+                    }} />
+                    {/* <button onClick = {this.sendMessage}> Send </button> */}
                 </div>
             </div>
         )

@@ -1,6 +1,10 @@
 $selectedColor : blue;
-$canvasHeight : 580px;
-$canvasWidht : 700px;
+$canvasHeight : 600px;
+$canvasWidht : 650px;
+$chatWidht : 230px;
+$playerWidht : 200px;
+$canvasChatMargin : 4px;
+$canvasPlayerMargin : 5px;
 
 html{
     height: 100%;
@@ -13,6 +17,7 @@ body{
     height: 100%;
     width: 100%;
     background-color: #00afb9 ;
+    // background-color: black;
 }
 #root{
     // background-color: red;
@@ -25,19 +30,54 @@ body{
 // }
 
 .main{
-    // background-color: red;
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    align-items: center;
+    .mainContent{
+        // background-color: red;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .titleHeader{
+        font-size: 2em;
+        margin : 10px;
+        color: white;
+        // margin-left: 2em;
+    }
+    
+}
+
+
+.timerAndWordContainer{
+    background-color: blue;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
+    width : 1025px;
+    height: 50px;
+    align-items: center;
+    padding : 0px 10px 0px 19px;
+    margin-bottom : 20px;
+    .timerDiv{
+        font-size: 1.5em;
+    }
+    .wordDiv{
+        font-size : 1.5em;
+    }
 }
+
 
 .chat-bar{
     // border: solid 2px rgb(0, 0, 0);
     margin: .2em;
+    margin-left: $canvasChatMargin;
     margin-top: 0em;
     padding: .5em;
     // border-style :inset;
-    width: 300px;
+    width: $chatWidht;
+    height: 450px;
     background-color: #fdfcdc;
     display: flex;
     flex-direction: column;
@@ -81,6 +121,19 @@ body{
         }
         
     }
+
+    .messageList::-webkit-scrollbar {
+        width: 4px;               /* width of the entire scrollbar */
+    }
+    .messageList::-webkit-scrollbar-track {
+        background: transparent;        /* color of the tracking area */
+    }
+    .messageList::-webkit-scrollbar-thumb {
+        background-color: rgb(160, 160, 168);    /* color of the scroll thumb */
+        border-radius: 2px;       /* roundness of the scroll thumb */
+        // border: 3px solid orange;  /* creates padding around scroll thumb */
+    }
+
     .textInput-div{
         // margin: 5px;
         padding: .2em;
@@ -90,14 +143,17 @@ body{
             flex-grow: 1;
             font-size: 1rem;
             height: 1.5em;
+            // width: 100px;
         }
     }
 }
 
 .players-bar{
     background-color: #FDFCDC;
-    width: 300px;
+    width: $playerWidht;
+    height: 400px;
     margin: .2em;
+    margin-right: $canvasPlayerMargin;
     margin-top: 0em;
     .playerItem{
         margin: .2em;
@@ -118,6 +174,7 @@ body{
     flex-direction: column;
     // margin: 10;
     align-items: center;
+    margin-bottom: 1em;
     
 
     .canvasContainer{
@@ -136,7 +193,7 @@ body{
         margin: 0em;
         padding: 0em;
         cursor : none;
-        pointer-events: none;
+        // pointer-events: none;
         canvas{
             margin : 0px;
             padding: 0px;
@@ -145,25 +202,26 @@ body{
     }
     .drawingBarRoot{
         display: flex;
-        position: relative;
-        top: -2.5px;
+        // position: relative;
+        // top: -2.5px;
         align-items: center;
         // padding: 20;
         justify-content: center;
         // background-color: red;
         width: $canvasWidht;
+        // margin-top: 1px;
         background-color: #F07167;
         .barItem{
-            margin : 10px 10px 5px 10px ;
+            margin : 5px 10px 5px 5px ;
             border : solid 2px;
-            font-size : 30px;
+            font-size : 26px;
         }
         input{
             border: solid 1px;
             margin : 0px;
             padding : 0px;
-            height : 30px;
-            width : 30px;
+            height : 26px;
+            width : 26px;
         }
         .selected{
             color : blue;

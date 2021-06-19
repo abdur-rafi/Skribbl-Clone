@@ -2,7 +2,9 @@ import React from 'react';
 import {io, Socket} from 'socket.io-client'
 import Chat from './chat';
 import DrawingBoard from './DrawingBoard';
+import Header from './header';
 import Players from './players';
+import TimerAndWord from './TimerAndWord';
 
 
 interface State{
@@ -11,6 +13,8 @@ interface State{
 interface Props{
 
 }
+
+
 
 class Main extends React.Component<Props, State>{
 
@@ -26,11 +30,18 @@ class Main extends React.Component<Props, State>{
 
     render() : React.ReactNode {
         return(
-            <div className = 'main' >
-                
-                <Players/>
-                <DrawingBoard />
-                <Chat />
+            <div  className='main' id = 'mainDiv'>
+                <div className='headerContainer'>
+                    <Header/>
+                </div>
+                <div>
+                    <TimerAndWord />
+                </div>
+                <div className = 'mainContent'>
+                    <Players/>
+                    <DrawingBoard />
+                    <Chat />
+                </div>
 
             </div>
         )

@@ -26,7 +26,7 @@ function hexToRGB(hex: string) : number[] {
 interface State{
     isModalOpen : boolean,
     words : string[],
-    chosenWord : string
+    // chosenWord : string
 }
 interface Props{
     drawMode : drawMode ;
@@ -52,7 +52,7 @@ class Canvas extends React.Component<Props, State>{
         this.state = {
             isModalOpen : false,
             words : [],
-            chosenWord : ''
+            // chosenWord : ''
         }
         this.shapeStartPoint = {
             x : -1,
@@ -146,7 +146,7 @@ class Canvas extends React.Component<Props, State>{
 
     }
 
-    handleMouseDownForPenAndEraser(context : CanvasRenderingContext2D, e : MouseEvent | eventAndCoord, drawMode : drawMode){
+    handleMouseDownForPenAndEraser(context : CanvasRenderingContext2D, e : MouseEvent | eventAndCoord, drawMode : drawMode, canvas : HTMLCanvasElement){
         context?.beginPath();
         if(drawMode === 'eraser'){
             context!.strokeStyle ='#ffffff';
@@ -168,15 +168,15 @@ class Canvas extends React.Component<Props, State>{
 
     handleCursorMovement(canvas : HTMLCanvasElement, cursor : HTMLElement, e : MouseEvent | eventAndCoord){
         let rect = canvas.getBoundingClientRect();
-                    
         if(cursor){
-            cursor.style.left = `${e.offsetX + + 5 + rect.left - this.props.lineWidth / 2 }px`;
-            cursor.style.top = `${e.offsetY + 5 + rect.top - this.props.lineWidth / 2 }px`;
+            console.log(e.offsetY);
+            cursor.style.left = `${e.offsetX + window.pageXOffset  + rect.left - this.props.lineWidth / 2 }px`;
+            cursor.style.top = `${e.offsetY  + window.pageYOffset + rect.top - this.props.lineWidth / 2 }px`;
         }
     }
 
-    handleMouseMovePenAndEraser(context : CanvasRenderingContext2D, e : MouseEvent | eventAndCoord){
-        context?.lineTo(e.offsetX, e.offsetY);
+    handleMouseMovePenAndEraser(context : CanvasRenderingContext2D, e : MouseEvent | eventAndCoord,delta : number){
+        context?.lineTo(e.offsetX , e.offsetY - delta );
         context?.stroke();
     }
 
@@ -237,6 +237,7 @@ class Canvas extends React.Component<Props, State>{
         this.floodFillAlgo(context, canvas, 0, 0, color);
         color = [0, 0, 0];
         const cursor : HTMLElement | null = document.querySelector('.cursor');
+
         
         canvas.addEventListener('mouseenter', e =>{
             if(cursor){
@@ -262,7 +263,9 @@ class Canvas extends React.Component<Props, State>{
                     color : this.props.colorString
                 }
                 socket.emit('drawEvent',socketData);
-                this.handleMouseMovePenAndEraser(context!, e);
+                // let delta =  window.pageYOffset;
+                let delta = 0;
+                this.handleMouseMovePenAndEraser(context!, e, delta);
             }
             else if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'circle' || this.props.drawMode === 'triangle'){
                 if(this.imageDataBeforeRectStart){
@@ -287,7 +290,7 @@ class Canvas extends React.Component<Props, State>{
                 this.handleMouseDownPaintFill(context!, canvas, e, this.props.colorString);
             }
             if(this.props.drawMode === 'pen' || this.props.drawMode === 'eraser'){
-                this.handleMouseDownForPenAndEraser(context!, e, this.props.drawMode);
+                this.handleMouseDownForPenAndEraser(context!, e, this.props.drawMode, canvas);
             }
             else if(this.props.drawMode === 'rectangle' || this.props.drawMode === 'circle' || this.props.drawMode === 'triangle'){
                 this.handleMouseDownDrawShape(context!, canvas!, e);
@@ -345,10 +348,10 @@ class Canvas extends React.Component<Props, State>{
             else if(data.event === 'mousedown'){
                 context!.strokeStyle = data.color;
                 context!.lineWidth = data.lineWidht;
-                this.handleMouseDownForPenAndEraser(context!,e,'pen');
+                this.handleMouseDownForPenAndEraser(context!,e,'pen', canvas);
             }
             else if(data.event === 'line'){
-                this.handleMouseMovePenAndEraser(context!,e);
+                this.handleMouseMovePenAndEraser(context!,e, 0);
             }
             else if(data.event === 'rectangle'){
                 context!.strokeStyle = data.color;
@@ -387,10 +390,13 @@ class Canvas extends React.Component<Props, State>{
         socket.on('newDrawer',data => {
             console.log(data);
             canvas.style.pointerEvents = 'none';
-            this.setState({
-                chosenWord : ''
-            })
+            // this.setState({
+            //     chosenWord : ''
+            // })
             context?.clearRect(0, 0, canvas.width,canvas.height);
+            context!.fillStyle = '#ffffff';
+            context?.fillRect(0, 0, canvas.width, canvas.width);
+            context!.fillStyle = this.props.colorString;
         })
 
         socket.on('selfDrawer', data=>{
@@ -400,25 +406,27 @@ class Canvas extends React.Component<Props, State>{
                 words : data.words,
                 isModalOpen : true
             })
-            context?.clearRect(0, 0, canvas.width,canvas.height);
+            context?.clearRect(0, 0, canvas.width,canvas.height);context!.fillStyle = '#ffffff';
+            context?.fillRect(0, 0, canvas.width, canvas.width);
+            context!.fillStyle = this.props.colorString;
             // alert('You are the drawer');
         })
 
         socket.on('chosenWord', data=>{
             this.setState({
-                chosenWord : data.word,
+                // chosenWord : data.word,
                 isModalOpen : false
             })
         })
 
-        socket.on('chosenWordLenght',data=>{
-            let gap : string = '';
-            for(let i = 0; i < data.length; ++i)
-                gap += '_ ';
-            this.setState({
-                chosenWord : gap
-            })
-        })
+        // socket.on('chosenWordLenght',data=>{
+        //     let gap : string = '';
+        //     for(let i = 0; i < data.length; ++i)
+        //         gap += '_ ';
+        //     this.setState({
+        //         chosenWord : gap
+        //     })
+        // })
 
     }
 
@@ -444,10 +452,10 @@ class Canvas extends React.Component<Props, State>{
     render() : React.ReactNode{
         return(
             <div className='canvasContainer'>
-                <div className='top'>
+                {/* <div className='top'>
                     <div><Timer/></div>
                     <div>{this.state.chosenWord}</div>
-                </div>
+                </div> */}
                 
                 <canvas className = 'canvas' ref={this.canvasRef}/>
                 <Modal onWordChosen = {this.onWordChosen} words={this.state.words} isModalOpen = {this.state.isModalOpen} />
@@ -533,3 +541,4 @@ const Modal : React.FC<{
 }
 
 export default Canvas;
+export {max};
