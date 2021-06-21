@@ -11,16 +11,58 @@ interface State{
 }
 
 interface Props{
+}
 
+const MessageItem : React.FC<{
+    message : {
+        message : string, 
+        sender : player
+    }
+}> = (props)=>{
+    return(
+        <div className = 'messageItem'>
+            <div className = 'userNameDiv'>
+                <div>
+                    {props.message.sender.userName}
+                </div>
+            </div>
+            <div className = 'messageDiv'>
+                
+                {props.message.message}
+            </div>
+        </div>
+    )
 }
 
 class Chat extends React.Component<Props, State>{
+    
+    messageListRef : React.RefObject<HTMLDivElement>
     constructor(props : Props){
         super(props);
         this.state = {
             value : '', 
-            messages : []
+            messages : [
+                {message : 'asdf asdf asdf asdf sadfsdfasdf sadfasdf asdfsadf sadfasdf asdf asdf asdf ',
+                sender : {
+                    socketId : 'asdfasdf',
+                    userName : 'Abdur Rafi'
+                },   
+                },
+                {message : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf asdf asdf asdf asdf ',
+                sender : {
+                    socketId : 'asdfasdf',
+                    userName : 'Abdur Rafi'
+                },   
+                },
+                {message : 'asdf asdf asdf asdf asdf ',
+                sender : {
+                    socketId : 'asdfasdf',
+                    userName : 'Abdur Rafi'
+                },   
+                },
+            ]
         }
+        this.messageListRef = React.createRef()
         this.sendMessage = this.sendMessage.bind(this);
     }
 
@@ -34,30 +76,21 @@ class Chat extends React.Component<Props, State>{
         socket.on('message', data=>{
             this.setState(old=>({
                 messages : [...old.messages, data]
-            }))
+            }),()=>{
+                if(this.messageListRef.current){
+                    this.messageListRef.current.scrollTop = this.messageListRef.current.scrollHeight;
+                }
+            })
         })
     }
 
     render():React.ReactNode{
-        let index = 0;
-        let m = this.state.messages.map(m => (
-            <div className='messageItem' key={index++}>
-                {/* {m.sender.userName + ': ' + m.message} */}
-                <div className='userName'>
-                        {m.sender.userName}
-                </div>
-                <div className='messageDiv'>
-                    <div>
-                        { ': ' + m.message}
-                    </div>
-                </div>
-                {/* { m.sender.userName + " : " + m.message} */}
-            </div>
-        ))
         return(
             <div className = 'chat-bar'>
-                <div className='messageList'>
-                    {m}
+                <div className='messageList' ref = {this.messageListRef}>
+                    {
+                        this.state.messages.map(m => <MessageItem message = {m} />)
+                    }
                 </div>
                 <div className='textInput-div'>
                     <input type='text' value = {this.state.value} placeholder='Enter your guess here' onChange = {e=>this.setState({
@@ -70,7 +103,6 @@ class Chat extends React.Component<Props, State>{
                             })
                         }
                     }} />
-                    {/* <button onClick = {this.sendMessage}> Send </button> */}
                 </div>
             </div>
         )

@@ -452,47 +452,12 @@ class Canvas extends React.Component<Props, State>{
     render() : React.ReactNode{
         return(
             <div className='canvasContainer'>
-                {/* <div className='top'>
-                    <div><Timer/></div>
-                    <div>{this.state.chosenWord}</div>
-                </div> */}
                 
                 <canvas className = 'canvas' ref={this.canvasRef}/>
                 <Modal onWordChosen = {this.onWordChosen} words={this.state.words} isModalOpen = {this.state.isModalOpen} />
             </div>
         )
     }
-}
-
-const Timer : React.FC<{}> = (props) =>{
-
-    const [time, setTime ] = useState<number>(0);
-
-    function decreaseTime(){
-        // console.log(time);
-        setTime(time => max(0, time - 1));
-    }
-
-
-
-    useEffect(()=>{
-        const id = setInterval(decreaseTime,1000);
-        return ()=>{
-            clearInterval(id);
-        }
-    },[])
-
-    useEffect(()=>{
-        socket.on('setTimer', (data)=>{
-            setTime(Math.floor(data.time / 1000));
-        });
-    }, []);
-
-    return(
-        <div>
-            {time}
-        </div>
-    )
 }
 
 const Modal : React.FC<{

@@ -1,287 +1,354 @@
-$selectedColor : blue;
-$canvasHeight : 600px;
-$canvasWidht : 650px;
-$chatWidht : 230px;
-$playerWidht : 200px;
-$canvasChatMargin : 4px;
-$canvasPlayerMargin : 5px;
+$selectedColor: blue;
+$canvasHeight: 600px;
+$canvasWidht: 650px;
+$chatWidht: 350px;
+$playerWidht: 200px;
+$canvasChatMargin: 4px;
+$canvasPlayerMargin: 5px;
 
-html{
-    height: 100%;
-    width: 100%;
-    margin: 0px;
+html {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
 }
-body{
-    margin: 0px;
-    // padding: 5px;
-    height: 100%;
-    width: 100%;
-    background-color: #00afb9 ;
-    
-    // background-color: black;
+body {
+  margin: 0px;
+  height: 100%;
+  width: 100%;
+  background-color: #00afb9;
 }
-#root{
-    // background-color: red;
-    padding: 10px;
-    height: calc(100% - 20px);
-}
-// .root-div{
-//     // height: calc(100% - 20px);
-//     // padding: 10px;
-// }
 
-.main{
+body::-webkit-scrollbar {
+  width: 13px; /* width of the entire scrollbar */
+}
+body::-webkit-scrollbar-track {
+  background: transparent; /* color of the tracking area */
+}
+body::-webkit-scrollbar-thumb {
+  background-color: rgb(105, 245, 105); /* color of the scroll thumb */
+  border-radius: 5px; /* roundness of the scroll thumb */
+//   border: 3px solid orange; /* creates padding around scroll thumb */
+}
+
+#root {
+  padding: 10px;
+  height: calc(100% - 20px);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .mainContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  .titleHeader {
+    font-size: 2em;
+    margin: 10px;
+    color: white;
+  }
+}
+
+.timerAndWordContainer {
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 1025px;
+  height: 50px;
+  align-items: center;
+  padding: 0px 10px 0px 19px;
+  margin-bottom: 20px;
+  .timerDiv {
+    font-size: 1.5em;
+    background-color: #D64933;
+    color: white;
+    width: 40px;
+    height: 40px;
     display: flex;
     flex-direction: column;
-    // justify-content: center;
+    justify-content: center;
     align-items: center;
-    .mainContent{
-        // background-color: red;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-    }
-    .titleHeader{
-        font-size: 2em;
-        margin : 10px;
-        color: white;
-        // margin-left: 2em;
-    }
-    
+    border-radius: 50%;
+}
+  .wordDiv {
+    font-size: 1.4em;
+    background-color: #E57A44;
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+  }
 }
 
+.chat-bar {
+  margin: 0.2em;
+  margin-left: $canvasChatMargin;
+  margin-top: 0em;
+  padding: 0.5em;
+  width: $chatWidht;
+  height: 500px;
+  // background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .messageList {
+    overflow-y: scroll;
+    height: 600px;
+    .messageItem {
+      display: flex;
+      flex-direction: row;
+      margin: 4px;
+      padding: 5px;
 
-.timerAndWordContainer{
-    background-color: blue;
+      background-color: transparent;
+      .userNameDiv {
+        // background-color: blue;
+        width: 75px;
+        min-width: 75px;
+        margin-right: 5px;
+        // background-color: blue;
+        div:first-child {
+          padding: 5px;
+          padding-left: 8px;
+          padding-right: 8px;
+          background-color: green;
+          color: white;
+          border-radius: 15px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      .messageDiv {
+        white-space: initial;
+        width: $chatWidht - 110;
+        word-wrap: break-word;
+        padding: 5px;
+        border-radius: 5px;
+        color: rgb(255, 255, 255);
+        background-color: #9c528b;
+        // background-color: yellow;
+      }
+    }
+    // .messageItem{
+    //     color: #403E04;
+    //     border-radius: .3em;
+    //     margin : .2em;
+    //     padding : .6em;
+    //     border: solid 1.5px rgb(150, 148, 148);
+    //     display: flex;
+    //     flex-direction: row;
+    //     background-color: white;
+    //     .userName{
+    //         margin-right: .2em;
+    //         display: inline;
+    //         color: green;
+    //         font-weight: bold;
+
+    //     }
+    //     .messageDiv{
+    //         font-size: 1.1em;
+    //         font-weight: 400;
+    //     }
+    // }
+  }
+
+  .messageList::-webkit-scrollbar {
+    width: 4px; /* width of the entire scrollbar */
+  }
+  .messageList::-webkit-scrollbar-track {
+    background: transparent; /* color of the tracking area */
+  }
+  .messageList::-webkit-scrollbar-thumb {
+    background-color: green; /* color of the scroll thumb */
+    border-radius: 2px; /* roundness of the scroll thumb */
+    // border: 3px solid orange;  /* creates padding around scroll thumb */
+  }
+
+  .textInput-div {
+    padding: 0.2em;
+    display: flex;
+    flex-direction: row;
+    input {
+      flex-grow: 1;
+      font-size: 1rem;
+      height: 1.5em;
+    }
+  }
+}
+
+.players-bar {
+  width: $playerWidht;
+  height: 450px;
+  overflow-y: scroll;
+  margin: 0.2em;
+  margin-right: $canvasPlayerMargin;
+  margin-top: 0em;
+  // .playerItem{
+  //     margin: .2em;
+  //     background-color: white;
+  //     border: solid 1px black;
+  //     border-radius: .3em;
+  //     padding: .3em;
+  //     .scoreDiv{
+  //         display: flex;
+  //         flex-direction: row;
+  //         justify-content: space-between;
+  //     }
+  // }
+  .playerItem {
+    background-color: white;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width : 1025px;
-    height: 50px;
-    align-items: center;
-    padding : 0px 10px 0px 19px;
-    margin-bottom : 20px;
-    .timerDiv{
-        font-size: 1.5em;
-    }
-    .wordDiv{
-        font-size : 1.5em;
-    }
-}
-
-
-.chat-bar{
-    // border: solid 2px rgb(0, 0, 0);
-    margin: .2em;
-    margin-left: $canvasChatMargin;
-    margin-top: 0em;
-    padding: .5em;
-    // border-style :inset;
-    width: $chatWidht;
-    height: 400px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    .messageList{
-        overflow-y: scroll;
-        height: 600px;
-        // background-color: red;
-        .messageItem{
-            // background-color: #fed9b7;
-            color: #403E04;
-            border-radius: .3em;
-            margin : .2em;
-            padding : .6em;
-            border: solid 1.5px rgb(150, 148, 148);
-            display: flex;
-            flex-direction: row;
-            background-color: white;
-            .userName{
-                // flex-grow: 1;
-                margin-right: .2em;
-                display: inline;
-                color: green;
-                font-weight: bold;
-                
-                // background-color: white;
-                // overflow: hidden;
-                // white-space: nowrap;
-                // text-overflow: ellipsis;
-                // width: 70px;
-                // font-size: 1em;
-                
-            }
-            .messageDiv{
-                // word-break: break-all;
-                // word-wrap: break-word;
-                // flex-grow: 1;
-                font-size: 1.1em;
-                font-weight: 400;
-            }
-        }
-        
-    }
-
-    .messageList::-webkit-scrollbar {
-        width: 4px;               /* width of the entire scrollbar */
-    }
-    .messageList::-webkit-scrollbar-track {
-        background: transparent;        /* color of the tracking area */
-    }
-    .messageList::-webkit-scrollbar-thumb {
-        background-color: rgb(160, 160, 168);    /* color of the scroll thumb */
-        border-radius: 2px;       /* roundness of the scroll thumb */
-        // border: 3px solid orange;  /* creates padding around scroll thumb */
-    }
-
-    .textInput-div{
-        // margin: 5px;
-        padding: .2em;
-        display: flex;
-        flex-direction: row;
-        input{
-            flex-grow: 1;
-            font-size: 1rem;
-            height: 1.5em;
-            // width: 100px;
-        }
-    }
-}
-
-.players-bar{
-    // background-color: white;
-    width: $playerWidht;
-    height: 400px;
-    margin: .2em;
-    margin-right: $canvasPlayerMargin;
-    margin-top: 0em;
-    .playerItem{
-        margin: .2em;
-        background-color: white;
-        border: solid 1px black;
-        border-radius: .3em;
-        padding: .3em;
-        .scoreDiv{
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-    }
-}
-
-.DrawingBoardRoot{
-    display: flex;
-    flex-direction: column;
-    // margin: 10;
-    align-items: center;
-    margin-bottom: 1em;
-    
-
-    .canvasContainer{
-        .top{
-            background-color: #FED9B7;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-    }
-
-    .canvas{
-        height : $canvasHeight;
-        width : $canvasWidht;
-        // border : solid black 1px;
-        margin: 0em;
-        padding: 0em;
-        cursor : none;
-        // pointer-events: none;
-        canvas{
-            margin : 0px;
-            padding: 0px;
-            display: block;
-        }
-    }
-    .drawingBarRoot{
-        display: flex;
-        // position: relative;
-        // top: -2.5px;
-        align-items: center;
-        // padding: 20;
-        justify-content: center;
-        // background-color: red;
-        width: $canvasWidht;
-        // margin-top: 1px;
-        background-color: #F07167;
-        .barItem{
-            margin : 5px 10px 5px 5px ;
-            border : solid 2px;
-            font-size : 26px;
-        }
-        input{
-            border: solid 1px;
-            margin : 0px;
-            padding : 0px;
-            height : 26px;
-            width : 26px;
-        }
-        .selected{
-            color : blue;
-        }
-    }
-}
-.cursor{
-    height : 40px;
-    width : 40px;
-    border-radius : 50%;
-    background-color : black;
-    border: solid white .5px;
-    position : absolute;
-    pointer-events : none;
-}
-
-.color-palette{
-    text-align: center;
-    // display: flex;
-    // flex-direction: row;
-    width: $playerWidht;
-    overflow-x: visible;
-    .color-block{
-        width: 30px;
-        height: 40px;
-        display: inline-block;
-        margin : 2px;
-        border: 1px solid white;
-    }
-    .color-block:hover{
-        opacity: .75;
-    }
-}
-
-.nibPalette{
+    height: 35px;
+    padding: 2px;
     margin: 2px;
-    // text-align: center;
-    width: $chatWidht;
-    
-    .nibBlock{
-        width: 30px;
-        height: 40px;
-        margin : 2px;
-        padding: 4px;
-        border: 2px solid white;
-        display: inline-block;
-        vertical-align: middle;
-        div:first-child{
-            // background-color: red;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+    margin-right: 4px;
+
+    border-radius: 15px;
+
+    .scoreDiv {
+      // margin-right: 5px;
+      padding-right: 9px;
+      padding-left: 9px;
+      background-color: rgb(14, 211, 63);
+      // min-width: 25px;
+      // padding: 5px;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: white;
+      // font-size: 16px;
+      text-align: center;
     }
-    .nibBlock:hover{
-        opacity: .75;
+    .userNameDiv {
+      padding-left: 10px;
+      padding-top: 8px;
+      // display: flex;
+      // flex-direction: column;
+      // justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+  }
 }
 
+.players-bar::-webkit-scrollbar {
+  width: 4px; /* width of the entire scrollbar */
+}
+.players-bar::-webkit-scrollbar-track {
+  background: transparent; /* color of the tracking area */
+}
+.players-bar::-webkit-scrollbar-thumb {
+  background-color: green; /* color of the scroll thumb */
+  border-radius: 2px; /* roundness of the scroll thumb */
+  // border: 3px solid orange;  /* creates padding around scroll thumb */
+}
 
+.DrawingBoardRoot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1em;
+
+  .canvasContainer {
+    .top {
+      background-color: #fed9b7;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+
+  .canvas {
+    height: $canvasHeight;
+    width: $canvasWidht;
+    margin: 0em;
+    padding: 0em;
+    cursor: none;
+    canvas {
+      margin: 0px;
+      padding: 0px;
+      display: block;
+    }
+  }
+  .drawingBarRoot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $canvasWidht;
+    background-color: #f07167;
+    background-color: white;
+    .barItem {
+      margin: 5px 10px 5px 5px;
+      border: solid 2px;
+      font-size: 26px;
+    }
+    input {
+      border: solid 1px;
+      margin: 0px;
+      padding: 0px;
+      height: 26px;
+      width: 26px;
+    }
+    .selected {
+      color: blue;
+    }
+  }
+}
+.cursor {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-color: black;
+  border: solid white 0.5px;
+  position: absolute;
+  pointer-events: none;
+}
+
+.color-palette {
+  text-align: center;
+  width: $playerWidht;
+  overflow-x: visible;
+  .color-block {
+    width: 30px;
+    height: 40px;
+    display: inline-block;
+    margin: 2px;
+    border: 1px solid white;
+  }
+  .color-block:hover {
+    opacity: 0.75;
+  }
+}
+
+.nibPalette {
+  margin: 2px;
+  margin-left: 10px;
+  width: $chatWidht;
+
+  .nibBlock {
+    width: 30px;
+    height: 40px;
+    margin: 2px;
+    padding: 4px;
+    border: 2px solid white;
+    display: inline-block;
+    vertical-align: middle;
+    div:first-child {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  .nibBlock:hover {
+    opacity: 0.75;
+  }
+}

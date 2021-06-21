@@ -1,7 +1,7 @@
 import React from 'react'
 
 const nibWidths = [ 4]
-for(let i = 8; i < 21; i += 4)
+for(let i = 8; i < 25; i += 4)
     nibWidths.push(i);
 
 const NibBlock : React.FC<{
