@@ -11,7 +11,6 @@ interface Props{
 }
 
 
-
 class Players extends React.Component<Props, State>{
     constructor(props : Props){
         super(props);
@@ -64,9 +63,16 @@ class Players extends React.Component<Props, State>{
             </div>
             
         ))
+
         return(
-            <div className = 'players-bar'>
-                {items}
+            <div>
+                
+                <div className = 'players-bar'>
+                    {items}
+                </div>
+                {/* <div>
+                    <ColorPalette changeColor = {this.props.changeColor} />
+                </div> */}
             </div>
         )
     }

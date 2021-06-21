@@ -326,8 +326,8 @@ class Canvas extends React.Component<Props, State>{
                 this.props.changeLineWidth(min(30, this.props.lineWidth + 1));
             }
             if(cursor){
-                cursor.style.height = cursor.style.width = `${this.props.lineWidth}px`;
-                cursor.style.borderRadius = '50%';
+                // cursor.style.height = cursor.style.width = `${this.props.lineWidth}px`;
+                // cursor.style.borderRadius = '50%';
             }
         })
         

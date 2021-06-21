@@ -33,7 +33,7 @@ class DrawingBar extends React.Component<Props, State>{
                 <RiPaintFill className={'barItem'.concat(this.selected('paintFill'))} onClick = {() => this.props.changeDrawMode('paintFill')}/>
                 <input className={'barItem'} type = 'color' onChange = {(e)=>{
                     this.props.changeColor(e.target.value);
-                }}  />
+                }} value = {this.props.color}  />
 
                 <BiEraser className={'barItem'.concat(this.selected('eraser'))} onClick = {() => this.props.changeDrawMode('eraser')}/>
                 <BiRectangle onClick = {()=>this.props.changeDrawMode('rectangle')} className = {'barItem'.concat(this.selected('rectangle'))} />
