@@ -26,7 +26,7 @@ const ColorPalette : React.FC<{
 }> = (props) => {
     return(
         <div className='color-palette'>
-            {colors.map(color => <ColorBlock changeColor = {props.changeColor} color = {color} />)}
+            {colors.map(color => <ColorBlock changeColor = {props.changeColor} color = {color} key={color} />)}
         </div>
     )
 }

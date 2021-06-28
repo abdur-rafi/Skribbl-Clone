@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { drawMode, eventAndCoord,mouseSocketEvent } from '../typesAndInterfaces';
 import {socket } from './Home'
-import { drawerImageData, sendImageData } from '../socketEventsTypes';
+import { drawerImageData, member, sendImageData } from '../socketEventsTypes';
 import ReactModal from 'react-modal';
 
 function min(x: number, y : number): number{
@@ -24,8 +24,8 @@ function hexToRGB(hex: string) : number[] {
 }
 
 interface State{
-    isModalOpen : boolean,
-    words : string[],
+    // isModalOpen : boolean,
+    // words : string[],
     // chosenWord : string
 }
 interface Props{
@@ -49,17 +49,17 @@ class Canvas extends React.Component<Props, State>{
     constructor(props : Props){
         super(props);
         this.canvasRef = React.createRef();
-        this.state = {
-            isModalOpen : false,
-            words : [],
-            // chosenWord : ''
-        }
+        // this.state = {
+        //     isModalOpen : false,
+        //     words : ['what', 'octopus', 'aneson gib'],
+        //     // chosenWord : ''
+        // }
         this.shapeStartPoint = {
             x : -1,
             y : -1
         };
         this.imageDataBeforeRectStart = undefined;
-        this.onWordChosen = this.onWordChosen.bind(this);
+        // this.onWordChosen = this.onWordChosen.bind(this);
     }
 
     
@@ -412,12 +412,12 @@ class Canvas extends React.Component<Props, State>{
             // alert('You are the drawer');
         })
 
-        socket.on('chosenWord', data=>{
-            this.setState({
-                // chosenWord : data.word,
-                isModalOpen : false
-            })
-        })
+        // socket.on('chosenWord', data=>{
+        //     this.setState({
+        //         // chosenWord : data.word,
+        //         isModalOpen : false
+        //     })
+        // })
 
         // socket.on('chosenWordLenght',data=>{
         //     let gap : string = '';
@@ -430,12 +430,12 @@ class Canvas extends React.Component<Props, State>{
 
     }
 
-    onWordChosen(word : string){
-        socket.emit('chosenWord', {
-            word : word
-        })
+    // onWordChosen(word : string){
+    //     socket.emit('chosenWord', {
+    //         word : word
+    //     })
         
-    }
+    // }
 
     createShapeSocketEvent(e : MouseEvent, event : mouseSocketEvent['event']):mouseSocketEvent{
         return {
@@ -454,56 +454,162 @@ class Canvas extends React.Component<Props, State>{
             <div className='canvasContainer'>
                 
                 <canvas className = 'canvas' ref={this.canvasRef}/>
-                <Modal onWordChosen = {this.onWordChosen} words={this.state.words} isModalOpen = {this.state.isModalOpen} />
+                {/* <Modal onWordChosen = {this.onWordChosen} words={this.state.words} isModalOpen = {this.state.isModalOpen} /> */}
+                <Summary />
             </div>
         )
     }
 }
 
-const Modal : React.FC<{
-    isModalOpen : boolean,
-    words : string[],
-    onWordChosen : (word : string) => void
+const WordItem : React.FC<{
+    word : string,
+    onWordChosen : (w : string) => void
 }> = (props)=>{
-    let w = props.words.map(w=>(
-        <div style={{
-            margin : 10,
-            padding : 5,
-            border : 'solid 1px black',
-            
-        }} onClick = {()=>props.onWordChosen(w)}>
-            {w}
-        </div>
-    ))
     return(
-
-        <ReactModal isOpen = {props.isModalOpen} style={{
-            content : {
-                top : '40%',
-                left : '35%',
-                right : '35%',
-                bottom : '40%',
-                backgroundColor : 'transparent',
-                display : 'flex',
-                justifyContent : 'center',
-                alignItems : 'center'
-                
-            },
-            overlay : {
-                
-            }
-        }} >
-            <div style = {{
-                // backgroundColor : 'red'
-                display : 'flex',
-                flexDirection : 'row',
-                fontSize : '1.5em'
-            }}>
-                {w}
-            </div>
-        </ReactModal>
+        <div className = 'wordItem' onClick = {()=> props.onWordChosen(props.word)}>
+            {props.word}
+        </div>
     )
 }
 
+const Summary : React.FC<{
+}> = (props)=>{
+
+    const [mode, setMode] = useState<'wordList' | 'scoreUpdate' | 'choosingWord' | 'endGame'>('choosingWord');
+    const [visible, setVisible] = useState<boolean>(true);
+    const [wordOptions , setWordOptions] = useState<string[]>([]);
+    const [members, setMembers] = useState<member[]>([
+        {socketId : '12341344', userName : 'Abdur rafi',score:0 , turnScore : 330},
+        {socketId : '123151324', userName : 'Abrar nafi',score:200, turnScore : 220},
+        {socketId : '', userName : 'Abdur nafi',score:30, turnScore : 110},
+        {socketId : '213', userName : 'Abdur nafi as df asdfsdfs dfasdf ',score:30000, turnScore : 0},
+        {socketId : '12341344', userName : 'Abdur rafi',score:100, turnScore :10},
+        {socketId : '123151324', userName : 'Abrar nafi',score:200, turnScore : 0},
+        {socketId : '', userName : 'Abdur nafi',score:300, turnScore : 110},
+        {socketId : '213', userName : 'Abdur nafi as df asdfsdfs dfasdf ',score:300, turnScore : 20},
+        {socketId : '12341344', userName : 'Abdur rafi',score:100, turnScore : 0},
+        {socketId : '123151324', userName : 'Abrar nafi',score:200, turnScore : 0},
+    ]);
+    const [userName, setUserName] = useState<string>('Abdur Rafi');
+    useEffect(()=>{
+        socket.on('turnEnd', (data)=>{
+            setMembers(data.members);
+            setMode('scoreUpdate');
+            setVisible(true);
+
+        });
+        socket.on('selfDrawer', (data)=>{
+            setWordOptions(data.words);
+            setMode('wordList');
+            setVisible(true);
+        })
+        socket.on('chosenWord', data=>{
+            setVisible(false);
+            setMembers([]);
+        })
+        socket.on('newDrawer', data=>{
+            // setVisible(false);
+            setMode('choosingWord');
+            setUserName(data.userName);
+        })
+        socket.on('chosenWordLenght', data=>{
+            setVisible(false);
+            setMembers([]);
+        })
+        socket.on('endGame', data=>{
+            setVisible(true);
+            setMode('endGame');
+        })
+
+        
+    },[])
+
+    
+    return(
+        <div className = 'summaryBlock' style={{
+            zIndex : visible ? 1 : -1
+        }}>
+            {(mode === 'wordList') ? <WordList wordOptions = {wordOptions} /> : null}
+            {mode === 'choosingWord' ? <ChoosingWord userName = {userName} /> : null}
+            {mode === 'scoreUpdate' ? <ScoreUpdate members = {members} /> : null}
+            {mode === 'endGame' ? <EndGame /> : null}
+        </div>
+    )
+}
+
+const ChoosingWord : React.FC<{
+    userName : string
+}> = (props)=>{
+    return(
+        <div className = 'choosingWord'>
+            {props.userName + ' is choosing a word...'}
+        </div>
+    )
+}
+
+const onChosenWord : (w : string )=> void = w =>{
+    console.log('word' , w);
+    socket.emit('chosenWord', {
+        word : w
+    })
+}
+
+const WordList : React.FC<{
+    wordOptions : string[]
+}> = (props)=>{
+
+    let index = 0;
+    return(
+        <div>
+            <div className = 'wordTitle'>
+                Select a word to draw
+            </div>
+            <div className = 'wordList'>
+                {props.wordOptions.map(w => {
+                    index++;
+                    return <WordItem word = {w} onWordChosen = {onChosenWord} key = {index}/>
+                })}
+            </div>
+        </div>
+    )
+}
+
+const ScoreUpdate : React.FC<{
+    members : member[]
+}> = (props)=>{
+    return(
+        <div className = 'scoreUpdateList'>
+            <div className = 'scoreUpdateHeader'>
+                Score gained
+            </div>
+            {props.members.map(m => <ScoreUpdateItem member = {m} key = {m.socketId}/>)}
+        </div>
+    )
+}
+const ScoreUpdateItem : React.FC<{
+    member : member
+}> = (props)=>{
+    return(
+        <div className = 'scoreUpdateItem'>
+            <div className = 'userNameDiv'>
+                {props.member.userName}
+            </div>
+            <div className = 'turnScoreDiv'>
+                {props.member.turnScore}
+            </div>
+            {/* {props.member.userName + ': ' + props.member.turnScore} */}
+        </div>
+    )
+}
+
+const EndGame : React.FC<{
+    
+}> = (props)=>{
+    return(
+        <div>
+            End Game
+        </div>
+    )
+}
 export default Canvas;
 export {max};

@@ -50,13 +50,13 @@ class Chat extends React.Component<Props, State>{
                 },
                 {message : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf asdf asdf asdf asdf ',
                 sender : {
-                    socketId : 'asdfasdf',
+                    socketId : 'asdafasdf',
                     userName : 'Abdur Rafi'
                 },   
                 },
                 {message : 'asdf asdf asdf asdf asdf ',
                 sender : {
-                    socketId : 'asdfasdf',
+                    socketId : 'asdgadsfasdf',
                     userName : 'Abdur Rafi'
                 },   
                 },
@@ -89,7 +89,7 @@ class Chat extends React.Component<Props, State>{
             <div className = 'chat-bar'>
                 <div className='messageList' ref = {this.messageListRef}>
                     {
-                        this.state.messages.map(m => <MessageItem message = {m} />)
+                        this.state.messages.map(m => <MessageItem message = {m} key={m.sender.socketId} />)
                     }
                 </div>
                 <div className='textInput-div'>

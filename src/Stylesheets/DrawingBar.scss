@@ -186,19 +186,10 @@ body::-webkit-scrollbar-thumb {
   margin: 0.2em;
   margin-right: $canvasPlayerMargin;
   margin-top: 0em;
-  // .playerItem{
-  //     margin: .2em;
-  //     background-color: white;
-  //     border: solid 1px black;
-  //     border-radius: .3em;
-  //     padding: .3em;
-  //     .scoreDiv{
-  //         display: flex;
-  //         flex-direction: row;
-  //         justify-content: space-between;
-  //     }
-  // }
+  overflow-x: hidden;
   .playerItem {
+    // overflow-x: visible;
+    flex-grow: 1;
     background-color: white;
     display: flex;
     flex-direction: row;
@@ -235,6 +226,20 @@ body::-webkit-scrollbar-thumb {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+  .playerBarMessage{
+    // color: white;
+    position: absolute;
+    // height: 20px;
+    max-width: 150px;
+    padding: 5px;
+    margin: 2px;
+    margin-left: 6px;
+    // background-color: black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 5px;
   }
 }
 
@@ -284,6 +289,7 @@ body::-webkit-scrollbar-thumb {
     width: $canvasWidht;
     background-color: #f07167;
     background-color: white;
+    margin-top: 10px;
     .barItem {
       margin: 5px 10px 5px 5px;
       border: solid 2px;
@@ -299,6 +305,7 @@ body::-webkit-scrollbar-thumb {
     .selected {
       color: blue;
     }
+    
   }
 }
 .cursor {
@@ -351,4 +358,106 @@ body::-webkit-scrollbar-thumb {
   .nibBlock:hover {
     opacity: 0.75;
   }
+}
+
+
+.canvasContainer{
+  display: grid;
+  
+  .canvas{
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .summaryBlock{
+    height: $canvasHeight;
+    width: $canvasWidht;
+    // position: relative;
+    grid-row: 1;
+    grid-column: 1;
+    background-color: rgba(64, 224, 208, 0.438);
+    // background-color: red;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .wordTitle{
+      // background-color: red;
+      font-size: 30px;
+      margin: 10px;
+      padding: 10px;
+      color: rgb(34, 34, 34);
+
+    }
+    // background-color: transparent;
+    .wordList{
+      display: flex;
+      flex-direction: row;
+      // justify-content: space-between;
+      // background-color: red;
+      .wordItem{
+        margin: 5px 10px 5px 10px;
+        padding: 5px 15px;
+        font-size: 20px;
+        background-color:rgb(28, 192, 204);
+        border-radius: 5px;
+        color: black;
+
+      }
+      .wordItem:hover{
+        opacity: .8;
+      }
+      
+    }
+
+    .scoreUpdateList{
+      // background-color: red;
+      // border: solid 1px black;
+      width: $canvasWidht / 3 ;
+      margin: 10px;
+      padding: 10px;
+      font-size: 18px;
+      .scoreUpdateHeader{
+        // background-color: red;
+        text-align: center;
+        margin: 10px;
+        font-size: 20px;
+      }
+      .scoreUpdateItem{
+        // background-color: blue;
+        // margin: 2px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: .5px;
+        margin: 3px;
+        .userNameDiv{
+          max-width: 150px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          border-radius: 4px;
+          // color: white;
+          padding: 5px;
+      
+          background-color:cornflowerblue;
+          
+        }
+        .turnScoreDiv{
+          background-color: rgb(19, 179, 207);
+          min-width: 20px;
+          text-align: center;
+          padding: 3px;
+          border-radius: 5px;
+        }
+      }
+    }
+
+    .choosingWord{
+      font-size: 20px;
+      color: grey;
+    }
+  }
+  
 }

@@ -31,7 +31,7 @@ const NibPicks : React.FC<{
 }> = (props) =>{
     return(
         <div className = 'nibPalette'>
-            {nibWidths.map(r => <NibBlock changeLineWidht = {props.changeLineWidht} radius = {r} />)}
+            {nibWidths.map(r => <NibBlock changeLineWidht = {props.changeLineWidht} radius = {r} key = {r} />)}
         </div>
     )
 }
