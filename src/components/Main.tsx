@@ -8,12 +8,17 @@ import Header from './header';
 import NibPicks from './PenNib';
 import Players from './players';
 import TimerAndWord from './TimerAndWord';
+import {socket} from './Home'
 
 
 interface State{
     drawMode : drawMode,
     color : string,
-    lineWidth : number
+    lineWidth : number,
+    user : {
+        socketId : string,
+        userName : string
+    }
 }
 
 interface Props{
@@ -31,7 +36,11 @@ class Main extends React.Component<Props, State>{
         this.state = {
             drawMode : 'pen',
             color : '#000000',
-            lineWidth : 10
+            lineWidth : 10,
+            user : {
+                socketId : '',
+                userName : ''
+            }
         }
         this.cursorRef = React.createRef();
         this.changeDrawMode = this.changeDrawMode.bind(this);
@@ -65,7 +74,11 @@ class Main extends React.Component<Props, State>{
     
 
     componentDidMount(){
-
+        socket.on('user', data=>{
+            this.setState({
+                user : data.user
+            })
+        })
     }
 
 
@@ -80,7 +93,7 @@ class Main extends React.Component<Props, State>{
                 </div>
                 <div className = 'mainContent'>
                     <div>
-                        <Players />
+                        <Players user= {this.state.user} />
                         <ColorPalette changeColor = {this.changeColor} />
                     </div>
                     {/* <Players/> */}

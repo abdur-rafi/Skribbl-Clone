@@ -35,7 +35,7 @@ const Round : React.FC<{}> = (props)=>{
     const [round, setRound] = useState<number>(0);
     useEffect(()=>{
         socket.on('roundNumber',data=>{
-            setRound(data.round);
+            setRound(data.round + 1);
         })
     }, []);
     return(
@@ -53,10 +53,6 @@ const TimerAndWord : React.FC<{}> = (props)=>{
         socket.on('newDrawer',data => {
             setChosenWord('');
         })
-        // socket.on('selfDrawer', data=>{
-        //     setChosenWord(data.words);
-        //     // alert('You are the drawer');
-        // })
 
         socket.on('chosenWord', data=>{
             setChosenWord(data.word);
@@ -73,11 +69,14 @@ const TimerAndWord : React.FC<{}> = (props)=>{
 
     return(
         <div className='timerAndWordContainer'>
-            <Round/>
+            {/* <Round/> */}
             <Timer/>
-            <div className='wordDiv'>
-                {chosenWord}
+            <div className = 'wordDivContainer'>
+                <div className='wordDiv'>
+                    {chosenWord}
+                </div>
             </div>
+            
         </div>
     )
 }

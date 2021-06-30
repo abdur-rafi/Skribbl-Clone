@@ -1,18 +1,25 @@
 import React from 'react';
+import { BiPencil } from 'react-icons/bi';
 import { player, member } from '../socketEventsTypes';
 import {socket} from './Home'
 interface State{
     members : member[],
-    drawer : player
+    drawer : string,
+    
 }
 
 interface Props{
-
+    user : {
+        userName : string, 
+        socketId : string
+    }
 }
 
 
 const PlayerItem : React.FC<{
-    member : member
+    member : member,
+    drawer : string,
+    userId : string
 }> = (props)=>{
 
     const playerDiv : HTMLDivElement | null= document.querySelector(`#${props.member.socketId}`);
@@ -28,9 +35,15 @@ const PlayerItem : React.FC<{
             display : 'flex',
             width : '200px'
         }}>
-            <div className = 'playerItem' id = {props.member.socketId}>
+            <div className = 'playerItem' id = {props.member.socketId}
+                style = {{
+                    backgroundColor : props.member.socketId === props.userId ? 'palegreen' : 'white'
+                }}>
                 <div className='userNameDiv'>
                     {props.member.userName}
+                </div>
+                <div className = 'iconDiv'>
+                    { props.drawer === props.member.socketId && <BiPencil />}
                 </div>
                 <div className = 'scoreDiv'>
                     {props.member.score}
@@ -66,10 +79,7 @@ class Players extends React.Component<Props, State>{
                 // {socketId : '', userName : 'Abdur nafi',score:300, turnScore : 0},
                 // {socketId : '213', userName : 'Abdur nafi as df asdfsdfs dfasdf ',score:300, turnScore : 0}
             ],
-            drawer : {
-                socketId : '',
-                userName : ''
-            }
+            drawer : ''
         }
     }
 
@@ -112,6 +122,18 @@ class Players extends React.Component<Props, State>{
                 }, 2000);
             })
         })
+
+        socket.on('selfDrawer', data=>{
+            this.setState({
+                drawer : data.newDrawer
+            })
+        })
+        socket.on('newDrawer', data=>{
+            this.setState({
+                drawer : data.newDrawer
+            })
+        })
+        
         
     }
 
@@ -121,7 +143,7 @@ class Players extends React.Component<Props, State>{
         return(
             <div>
                 <div className = 'players-bar'>
-                    {this.state.members.map(m => <PlayerItem member={m} key = {m.socketId}/>)}
+                    {this.state.members.map(m => <PlayerItem drawer = {this.state.drawer} member={m} userId = {this.props.user.socketId} key = {m.socketId}/>)}
                 </div>
             </div>
         )

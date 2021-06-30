@@ -7,15 +7,55 @@ $canvasChatMargin: 4px;
 $canvasPlayerMargin: 5px;
 
 html {
-  height: 100%;
+  // height: 100%;
   width: 100%;
   margin: 0px;
+  min-height: 100%;
+
+
+
+
+//   background: hsla(141, 81%, 87%, 1);
+
+// background: linear-gradient(90deg, hsla(141, 81%, 87%, 1) 0%, hsla(41, 88%, 75%, 1) 50%, hsla(358, 82%, 71%, 1) 100%);
+
+// background: -moz-linear-gradient(90deg, hsla(141, 81%, 87%, 1) 0%, hsla(41, 88%, 75%, 1) 50%, hsla(358, 82%, 71%, 1) 100%);
+
+// background: -webkit-linear-gradient(90deg, hsla(141, 81%, 87%, 1) 0%, hsla(41, 88%, 75%, 1) 50%, hsla(358, 82%, 71%, 1) 100%);
+
+// background: hsla(284, 100%, 53%, 1);
+
+// background: linear-gradient(90deg, hsla(284, 100%, 53%, 1) 0%, hsla(77, 100%, 64%, 1) 100%);
+
+// background: -moz-linear-gradient(90deg, hsla(284, 100%, 53%, 1) 0%, hsla(77, 100%, 64%, 1) 100%);
+
+// background: -webkit-linear-gradient(90deg, hsla(284, 100%, 53%, 1) 0%, hsla(77, 100%, 64%, 1) 100%);
+
+
+background: hsla(154, 100%, 76%, 1);
+
+background: linear-gradient(90deg, hsla(154, 100%, 76%, 1) 0%, hsla(234, 100%, 83%, 1) 50%, hsla(288, 100%, 81%, 1) 100%);
+
+background: -moz-linear-gradient(90deg, hsla(154, 100%, 76%, 1) 0%, hsla(234, 100%, 83%, 1) 50%, hsla(288, 100%, 81%, 1) 100%);
+
+background: -webkit-linear-gradient(90deg, hsla(154, 100%, 76%, 1) 0%, hsla(234, 100%, 83%, 1) 50%, hsla(288, 100%, 81%, 1) 100%);
+background: hsla(186, 33%, 94%, 1);
+
+background: linear-gradient(90deg, hsla(186, 33%, 94%, 1) 0%, hsla(216, 41%, 79%, 1) 100%);
+
+background: -moz-linear-gradient(90deg, hsla(186, 33%, 94%, 1) 0%, hsla(216, 41%, 79%, 1) 100%);
+
+background: -webkit-linear-gradient(90deg, hsla(186, 33%, 94%, 1) 0%, hsla(216, 41%, 79%, 1) 100%);
+
+// filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#EBF4F5", endColorstr="#B5C6E0", GradientType=1 );
+
 }
 body {
   margin: 0px;
   height: 100%;
   width: 100%;
-  background-color: #00afb9;
+  // background-color: #00afb9;
+  
 }
 
 body::-webkit-scrollbar {
@@ -47,7 +87,7 @@ body::-webkit-scrollbar-thumb {
   .titleHeader {
     font-size: 2em;
     margin: 10px;
-    color: white;
+    // color: white;
   }
 }
 
@@ -73,12 +113,16 @@ body::-webkit-scrollbar-thumb {
     align-items: center;
     border-radius: 50%;
 }
-  .wordDiv {
-    font-size: 1.4em;
-    background-color: #E57A44;
-    color: white;
-    padding: 8px;
-    border-radius: 8px;
+  .wordDivContainer{
+    // width: 200px;
+    
+    .wordDiv {
+      font-size: 1.4em;
+      background-color: #E57A44;
+      color: white;
+      padding: 8px;
+      border-radius: 8px;
+    }
   }
 }
 
@@ -201,6 +245,12 @@ body::-webkit-scrollbar-thumb {
 
     border-radius: 15px;
 
+    .iconDiv{
+      color: black;
+      font-size: 20px;
+      align-self: center;
+      margin-right: 5px;
+    }
     .scoreDiv {
       // margin-right: 5px;
       padding-right: 9px;
@@ -225,6 +275,7 @@ body::-webkit-scrollbar-thumb {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      flex-grow: 1;
     }
   }
   .playerBarMessage{
@@ -287,7 +338,7 @@ body::-webkit-scrollbar-thumb {
     align-items: center;
     justify-content: center;
     width: $canvasWidht;
-    background-color: #f07167;
+    // background-color: #FF85BA;
     background-color: white;
     margin-top: 10px;
     .barItem {
@@ -316,6 +367,7 @@ body::-webkit-scrollbar-thumb {
   border: solid white 0.5px;
   position: absolute;
   pointer-events: none;
+  display: none;
 }
 
 .color-palette {
@@ -375,7 +427,7 @@ body::-webkit-scrollbar-thumb {
     // position: relative;
     grid-row: 1;
     grid-column: 1;
-    background-color: rgba(64, 224, 208, 0.438);
+    // background-color: rgba(64, 224, 208, 0.438);
     // background-color: red;
     z-index: 1;
     display: flex;
